@@ -2,6 +2,8 @@
 
 _Fyrsta útgáfa_, ekki er búið að fullskilgreina vefþjónustuskil eða útbúa gögn í byrjun, stefnt á að verði komið 7.–8. febrúar. Nota skal tíma þangað til, til þess að finna hóp, skipta með sér verkum, ákveða samskipti, og skilgreina tímalínu fyrir vinnu á verkefninu.
 
+[Yfirferð í fyrirlestri 4](https://youtu.be/gQEFFKGumG0)
+
 ---
 
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
