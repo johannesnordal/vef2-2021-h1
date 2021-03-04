@@ -44,22 +44,24 @@ Skilgreina skal töflur fyrir:
   * Tungumál, strengur (tæknilega `ISO 639-1` kóði fyrir tungumál), krafa en ekki þarf að staðfesta að gildi sé ISO 639-1
   * Sjónvarpsstöð (e. network), strengur
   * Vefsíða, strengur (url), má vera tómt
-* Sjónvarpsþáttaflokkar
+* Sjónvarpsþáttategund
   * Nafn, strengur, ekki tómt
-* Tengitafla milli sjónvaprsþátta og sjónvarpsþáttaflokka
+* Tengitafla milli sjónvaprsþátta og sjónvarpsþáttategundar
   * Vísun í sjónvarpsþátt
-  * Vísun í sjónvarpsþáttaflokk
+  * Vísun í sjónvarpsþáttategund
 * Season af sjónvarpsþáttum
   * Nafn, strengur, ekki tómt
   * Númer, heiltala, stærri en 0, krafa
   * Fyrst sjónvarpað, dagsetning, má vera tóm
   * Lýsing, strengur, má vera tóm
   * Poster, vísun í slóð, ekki tóm
+  * Vísun í sjónvarpsþátt
 * Þætti
   * Nafn, strengur, ekki tómt
   * Númer, heiltala, stærri en 0, krafa
   * Fyrst sjónvarpað, dagsetning, má vera tóm
   * Lýsing, strengur, má vera tóm
+  * Vísun í season
 * Notendur
   * Notendanafn, einstakt, krafist
   * Netfang, einstakt, krafist
@@ -109,7 +111,7 @@ GET á `/` skal skila lista af slóðum í mögulegar aðgerðir.
 
 Þegar eining er búin til skal það aðeins gert ef notandi er stjórnandi og eining er rétt.
 
-Ekki þarf að útfæra meira en tilgreint er (t.d. eyða, uppfæra flokk; uppfæra season; uppfæra sjónvarpsþátt).
+Ekki þarf að útfæra meira en tilgreint er (t.d. eyða, uppfæra tegund; uppfæra season; uppfæra sjónvarpsþátt).
 
 Ef beðið er um einingu sem ekki er til skal skila `404`.
 
@@ -118,13 +120,14 @@ Ef beðið er um einingu eða reynt að framkvæma aðgerð sem ekki er leyfi fy
 ### Sjónvarpsþættir
 
 * `/tv`
-  * `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum, fylki af flokkum, fylki af seasons, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt
+  * `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
   * `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id`
-  * `GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, fylki af flokkum, fylki af seasons
+  * `GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt, fylki af tegundum sjónvarpsþáttar (genres), fylki af seasons, rating notanda, staða notanda
   * `PATCH`, uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
   * `DELETE`, eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id/season/`
+  * `GET` skilar fylki af öllum seasons fyrir sjónvarpsþátt
   * `POST` býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
 * `/tv/:id/season/:id`
   * `GET` skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
@@ -134,9 +137,9 @@ Ef beðið er um einingu eða reynt að framkvæma aðgerð sem ekki er leyfi fy
 * `/tv/:id/season/:id/episode/:id`
   * `GET` skilar upplýsingum um þátt
   * `DELETE`, eyðir þætti, aðeins ef notandi er stjórnandi
-* `/categories`
-  * `GET` skilar síðu af flokkum
-  * `POST` býr til flokk, aðeins ef notandi er stjórnandi
+* `/genres`
+  * `GET` skilar síðu af tegundum (genres)
+  * `POST` býr til tegund, aðeins ef notandi er stjórnandi
 
 ### Notendur
 
@@ -175,6 +178,15 @@ Allar niðurstöður sem geta skilað mörgum færslum (fleiri en 10) skulu skil
 Ekki þarf að útfæra „týnt lykilorð“ virkni.
 
 Lausn skal keyra á Heroku.
+
+## Sýnilausn
+
+Hægt er að skoða sýnilausn á: `https://vef2-2021-h1-synilausn.herokuapp.com/`.
+
+Útfært:
+
+* Gögn færð inn með myndum
+* Óinnskráður notandi getur skoðað öll gögn
 
 ## Hópavinna
 
@@ -235,4 +247,5 @@ Sett verða fyrir tvö hópverkefni þar sem hvort um sig gildir 10%, samtals 20
 | Útgáfa | Lýsing |
 | 0.1    | _Fyrsta útgáfa_, ekki er búið að fullskilgreina vefþjónustuskil eða útbúa gögn í byrjun, stefnt á að verði komið 7.–8. febrúar. Nota skal tíma þangað til, til þess að finna hóp, skipta með sér verkum, ákveða samskipti, og skilgreina tímalínu fyrir vinnu á verkefninu. [Yfirferð í fyrirlestri 4](https://youtu.be/gQEFFKGumG0) |
 | 0.2    | Lýsing á gögnum, lýsing á þjónustum, mat, gögn |
+| 0.3    | Lagfæringar á lýsingu. Vísun á vefþjónustu sýnilausnar |
 |--------|--------|
