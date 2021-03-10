@@ -30,6 +30,10 @@ Nota skal JWT með passport og geyma notendur i gagnagrunni. Útfæra þarf auð
 * Einn almennan notanda sem hefur vistaðar stöður á einhverjum af gefnum þáttum, season, þáttum, skrá skal upplýsingar um notanda í `README`
   * Þessi notandi er til þess að einfalda yfirferð á verkefni.
 
+## To do
+
+[Trello](https://trello.com/b/z43lIwDs/sk%C3%B3li)
+
 ## Töflur
 
 Skilgreina skal töflur fyrir:
