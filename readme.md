@@ -8,6 +8,10 @@
   * Stjórnendur sem geta breytt, bætt við, og eytt sjónvarpsþáttum, seasons og stökum þáttum
   * Notendum sem geta skráð sína „stöðu“ fyrir sjónvarpsþátt, season og staka þætti
 
+## To do
+
+[Trello](https://trello.com/b/z43lIwDs/sk%C3%B3li)
+
 ## Notendaumsjón
 
 Notendaumsjón skiptist í þrennt: óauðkenndur notandi, notendur og stjórnendur.
@@ -29,10 +33,6 @@ Nota skal JWT með passport og geyma notendur i gagnagrunni. Útfæra þarf auð
 * Einn stjórnanda með notandanafn `admin` og þekkt lykilorð, skrá skal lykilorð í `README` verkefnis.
 * Einn almennan notanda sem hefur vistaðar stöður á einhverjum af gefnum þáttum, season, þáttum, skrá skal upplýsingar um notanda í `README`
   * Þessi notandi er til þess að einfalda yfirferð á verkefni.
-
-## To do
-
-[Trello](https://trello.com/b/z43lIwDs/sk%C3%B3li)
 
 ## Töflur
 
