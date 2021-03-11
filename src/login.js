@@ -1,52 +1,86 @@
-/* eslint-disable import/named */
-
 import passport from 'passport';
-import { Strategy } from 'passport-local';
-//import { comparePasswords, findByUsername, findById } from './users.js';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
-// Útfæri passport virkni hér til að létta á app.js
-export const pass = passport;
+import { comparePasswords, findByUsername, findById } from './users.js';
 
-/**
- * Athugar hvort username og password sé til í notandakerfi.
- * Callback tekur við villu sem fyrsta argument, annað argument er
- * - `false` ef notandi ekki til eða lykilorð vitlaust
- * - Notandahlutur ef rétt
- *
- * @param {string} username Notandanafn til að athuga
- * @param {string} password Lykilorð til að athuga
- * @param {function} done Fall sem kallað er í með niðurstöðu
- */
-async function strat(username, password, done) {
-  try {
-    const user = await findByUsername(username);
+dotenv.config();
 
-    if (!user) {
-      return done(null, false);
-    }
+const {
+  JWT_SECRET: jwtSecret,
+  TOKEN_LIFETIME: tokenLifetime = 60, //60 sek
+  DATABASE_URL: databaseUrl,
+} = process.env;
 
-    // Verður annað hvort notanda hlutur ef lykilorð rétt, eða false
-    const result = await comparePasswords(password, user);
-    return done(null, result);
-  } catch (err) {
-    console.error(err);
-    return done(err);
+if (!jwtSecret || !databaseUrl) {
+  console.error('Vantar .env gildi');
+  process.exit(1);
+}
+
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: jwtSecret,
+};
+
+async function strat(data, next) {
+  // fáum id gegnum data sem geymt er í token
+  const user = await findById(data.id);
+
+  if (user) {
+    next(null, user);
+  } else {
+    next(null, false);
   }
 }
 
-passport.use(new Strategy(strat));
+passport.use(new Strategy(jwtOptions, strat));
 
-// Geymum id á notanda í session, það er nóg til að vita hvaða notandi þetta er
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
+export function requireAuthentication(req, res, next) {
+  return passport.authenticate(
+    'jwt',
+    { session: false },
+    (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
 
-// Sækir notanda út frá id
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await findById(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
+      if (!user) {
+        const error = info.name === 'TokenExpiredError'
+          ? 'expired token' : 'invalid token';
+
+        return res.status(401).json({ error });
+      }
+
+      // Látum notanda vera aðgengilegan í rest af middlewares
+      req.user = user;
+      return next();
+    },
+  )(req, res, next);
+}
+
+/**
+ * @returns jwt token if successful else error message
+ */
+export async function login(req, res) {
+  const { username, password = '' } = req.body;
+
+  const user = await findByUsername(username);
+
+  if (!user) {
+    return res.status(401).json({ error: 'No such user' });
   }
-});
+
+  const passwordIsCorrect = await comparePasswords(password, user.password);
+
+  if (passwordIsCorrect) {
+    const payload = { id: user.id };
+    const tokenOptions = { expiresIn: tokenLifetime };
+    const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
+    return res.json({ token });
+  }
+
+  return res.status(401).json({ error: 'Invalid password' });
+}
+
+export default passport;

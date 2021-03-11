@@ -1,8 +1,14 @@
 import express from 'express';
-import session from 'express-session';
 import dotenv from 'dotenv';
 
-import { pass as passport } from './login.js';
+import passport from './login.js'
+import {
+  login,
+  requireAuthentication
+} from './login.js';
+import {
+  register
+} from './register.js'
 
 dotenv.config();
 
@@ -11,23 +17,37 @@ const {
 } = process.env;
 
 const app = express();
+export const router = express.Router();
 
-/** * Passport og session virkni */
-const sessionSecret = 'leyndarmál';
-app.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-  maxAge: 600 * 1000, // 10 mín
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+// Notum JSON middleware til að geta tekið við JSON frá client
+router.use(express.json());
+router.use(passport.initialize());
 
-
-app.get('/', (rew,res)=>{
-    res.json({maggi:"hallo heimur"})
+router.get('/', (rew, res) => {
+  res.json({ maggi: "hallo heimur" })
 })
 
+router.post('/tv/:id/season/:id/episode/:id', func);
+router.post('/tv/:id/season/:id/episode', func);
+router.post('/tv/:id/season/:id', func);
+router.post('/tv/:id/season', func);
+router.post('/tv/:id', func);
+router.post('/tv', func);
+
+router.post('/genres', func);
+
+router.post('/users/regiser',register);
+router.post('/users/login', login); // Komið
+router.post('/users/:id', func);
+router.post('/users/me',func);
+router.post('/users', func);
+
+app.use('/', router);
+
 app.listen(port, () => {
-    console.info(`Server running at http://localhost:${port}/`);
-  });
+  console.info(`Server running at http://localhost:${port}/`);
+});
+
+function func(req,res){
+  console.log("Ekki alvöru fall")
+}
