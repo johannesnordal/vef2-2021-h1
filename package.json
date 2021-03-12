@@ -1,0 +1,22 @@
+{
+  "name": "vef2-2021-h1",
+  "version": "1.0.0",
+  "description": "Hópverkefni 1, Vefforritun 2",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johannesnordal/vef2-2021-h1.git"
+  },
+  "author": "Jóhannes Nordal, Magnús Þór Valdimarsson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/johannesnordal/vef2-2021-h1/issues"
+  },
+  "homepage": "https://github.com/johannesnordal/vef2-2021-h1#readme",
+  "devDependencies": {
+    "neat-csv": "^6.0.1"
+  }
+}
