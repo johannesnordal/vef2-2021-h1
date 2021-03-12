@@ -1,10 +1,10 @@
 {
   "name": "vef2-2021-h1",
   "version": "1.0.0",
-  "description": "Hópverkefni 1, Vefforritun 2",
+  "description": "Vefþjónustu fyrir sjónvarpsþáttavef",
   "main": "src/app.js",
   "scripts": {
-    "test": "nodemon src/app.js"
+    "dev": "nodemon src/app.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,16 @@
   "homepage": "https://github.com/johannesnordal/vef2-2021-h1#readme",
   "devDependencies": {
     "neat-csv": "^6.0.1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.5.1"
   }
 }
