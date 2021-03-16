@@ -33,7 +33,7 @@ create table seasons
     "number" integer check ("number" > 0),
     airDate date,
     overview text,
-    poster text not null, -- URL
+    image text not null, -- URL
     serieId integer not null,
     constraint serieId foreign key (serieId) references tvshows(id)
 );
