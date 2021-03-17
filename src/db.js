@@ -1,5 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 import { readFileAsync } from './utils.js';
 
 dotenv.config();
@@ -85,6 +86,38 @@ export async function insertSerieGenre(serieID, genre) {
   const q = `insert into tvshows_genres (tvshow, genre) values($1, $2)`;
 
   await query(q, [serieID, genre]);
+}
+
+export async function insertUser(username,email, password) {
+    // Geymum hashað password!
+    const hashedPassword = await bcrypt.hash(password, 11);
+
+    const q = `
+      INSERT INTO
+        users (username, email, password)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `;
+
+    try {
+        const result = await query(q, [username, email, hashedPassword]);
+        return result.rows[0];
+    } catch (e) {
+        console.error('Gat ekki búið til notanda');
+    }
+
+    return null;
+}
+
+/**
+ * Kemur alltaf á eftir requireAuthentication
+ */
+export async function isAdmin(req,res, next) {
+  const { admin } = req.user;
+  if (admin) {
+    return next();
+  }
+  return res.json({"error": "insufficient authorization"})
 }
 
 export default {
