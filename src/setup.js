@@ -1,5 +1,21 @@
+import path from 'path';
 import csvData from './csv-data.js';
+import { uploadImage } from './image-data.js';
 import db from './db.js';
+
+async function setImageURL(serie, image) {
+  const imagePath = getImagePath(image);
+
+  const imageURL = await uploadImage(imagePath);
+
+  serie.image = imageURL;
+
+  return serie;
+}
+
+function getImagePath(imageName) {
+  return path.join('./data/img/', imageName);
+}
 
 function getGenres(series) {
   const genres = new Set();
@@ -12,22 +28,13 @@ function getGenres(series) {
   return genres;
 }
 
-async function insertSeriesGenres(series, seriesIDs) {
-  for (const serie of series) {
-    const serieID = seriesIDs.get(serie.id);
-    const genres = serie.genres.split(',');
-
-    for (const genre of genres) {
-      await db.insertSerieGenre(serieID, genre);
-    }
-  }
-}
-
 async function insertSeries(series) {
   const seriesIDs = new Map();
 
   for (const serie of series) {
-    const { id: csvID, genres, ...rest } = serie;
+    const { id: csvID, genres, image, ...rest } = serie;
+
+    await setImageURL(rest, image);
 
     const id = await db.insertSerie(rest);
 
@@ -47,7 +54,9 @@ async function insertSeasons(seasons, seriesIDs) {
   for (const season of seasons) {
     const serieID = seriesIDs.get(season.serieId);
 
-    const { serie, airDate, ...rest } = season;
+    const { serie, airDate, poster, ...rest } = season;
+
+    await setImageURL(rest, poster);
 
     if (airDate) {
       rest.airDate = airDate;
@@ -55,11 +64,7 @@ async function insertSeasons(seasons, seriesIDs) {
 
     rest.serieId = serieID;
 
-    try {
-      await db.insertSeason(rest);
-    } catch (e) {
-      console.error(`Couldn't insert season: ${season.serie}, ${season.name}`, e);
-    }
+    await db.insertSeason(rest);
   }
 }
 
@@ -67,7 +72,8 @@ async function insertEpisodes(episodes, seriesIDs) {
   for (const episode of episodes) {
     const q = `SELECT id FROM seasons WHERE serieId = $1 AND number = $2`;
 
-    const { rows: [ res ] } = await db.query(q, [episode.serieId, episode.season]);
+    const serieID = seriesIDs.get(episode.serieId);
+    const { rows: [ res ] } = await db.query(q, [serieID, episode.season]);
 
     const seasonId = res.id;
 
@@ -80,6 +86,17 @@ async function insertEpisodes(episodes, seriesIDs) {
     rest.seasonId = seasonId;
 
     await db.insertEpisode(rest);
+  }
+}
+
+async function insertSeriesGenres(series, seriesIDs) {
+  for (const serie of series) {
+    const serieID = seriesIDs.get(serie.id);
+    const genres = serie.genres.split(',');
+
+    for (const genre of genres) {
+      await db.insertSerieGenre(serieID, genre);
+    }
   }
 }
 

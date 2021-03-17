@@ -71,7 +71,7 @@ export async function insertSeason(season) {
   await query(q, values);
 }
 
-export async function insertEpisode(episode, seasonID) {
+export async function insertEpisode(episode) {
   const keys = Object.keys(episode);
   const values = Object.values(episode);
 
