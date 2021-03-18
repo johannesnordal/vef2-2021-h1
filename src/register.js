@@ -1,4 +1,4 @@
-import { insertUser } from "./db.js";
+import { insert } from "./db.js";
 import { findByEmail, findByUsername } from "./users.js";
 
 export async function register(req,res) {
@@ -11,7 +11,15 @@ export async function register(req,res) {
     if (result2) {
         return res.status(401).json({ error: 'Email taken'});
     }
-    const user = await insertUser(username,email,password);
+    
+    const user = await insert.user({
+        "username": username,
+        "email":email,
+        "password": password
+    });
+    console.log(user) // Prentar null
+
+
     var dt = new Date();
     const obj = {
         "id": user.id,

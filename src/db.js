@@ -216,6 +216,7 @@ export function toParamString(n) {
   return [...Array(n).keys()].map((index) => `$${index + 1}`);
 }
 
+
 export default {
   load,
   clear,
