@@ -19,7 +19,6 @@ create table genres
 
 create table tvshows_genres
 (
-    id serial primary key,
     tvshow integer not null,
     genre text not null,
     constraint tvshow foreign key (tvshow) references tvshows(id),
@@ -63,11 +62,10 @@ create type status as ENUM('Langar að horfa', 'Er að horfa', 'Hef horft');
 
 create table users_tvshows
 (
-    id serial primary key,
     tvshow integer not null,
-    users integer not null,
+    "user" integer not null,
     constraint tvshow foreign key (tvshow) references tvshows(id),
-    constraint "user" foreign key (users) references users(id),
-    view_status status,
+    constraint "user" foreign key ("user") references users(id),
+    viewStatus status,
     rating integer check (rating >= 0 and rating <= 5)
 );

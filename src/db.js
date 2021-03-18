@@ -1,5 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 import { readFileAsync } from './utils.js';
 
 dotenv.config();
@@ -36,7 +37,7 @@ export async function query(q, values = []) {
   return result;
 }
 
-function toParamString(n) {
+export function toParamString(n) {
   return [...Array(n).keys()].map((index) => `$${index + 1}`);
 }
 
@@ -87,6 +88,52 @@ export async function insertSerieGenre(serieID, genre) {
   await query(q, [serieID, genre]);
 }
 
+export async function insertUser(user) {
+  const { admin, password, ...rest } = user;
+
+  rest.password = await bcrypt.hash(password, 11);
+
+  if (admin) {
+    rest.admin = admin;
+  }
+
+  const keys = Object.keys(rest);
+  const values = Object.values(rest);
+
+  const paramString = toParamString(values.length);
+  const q = `INSERT INTO users (${keys}) VALUES (${paramString}) RETURNING *`;
+ 
+  try {
+    await query(q, values);
+  } catch (e) {
+    console.error('Gat ekki búið til notanda');
+  }
+
+  return null;
+}
+
+export async function insertUserSerie(data) {
+  const { viewStatus, rating, ...rest } = data;
+
+  if (!viewStatus && !rating) return;
+
+  if (viewStatus) {
+    rest.viewStatus = viewStatus;
+  }
+
+  if (rating) {
+    rest.rating = rating;
+  }
+
+  const keys = Object.keys(rest);
+  const values = Object.values(rest);
+
+  const paramString = toParamString(values.length);
+  const q = `INSERT INTO user_tvshows (${keys}) VALUES (${paramString})`;
+
+  await query(q, values);
+}
+
 export default {
   query,
   insertSerie,
@@ -94,6 +141,8 @@ export default {
   insertEpisode,
   insertGenre,
   insertSerieGenre,
+  insertUser,
   load,
   clear,
+  toParamString,
 }

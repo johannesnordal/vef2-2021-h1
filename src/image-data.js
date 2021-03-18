@@ -17,8 +17,9 @@ if (!cloudinaryURL) {
   });
 }
 
-const uploadAsync = util.promisify(cloudinary.uploader.upload);
-const resourcesAsync = util.promisify(cloudinary.api.resources);
+export const uploadAsync = util.promisify(cloudinary.uploader.upload);
+export const resourcesAsync = util.promisify(cloudinary.api.resources);
+export const resourcesByIdAsync = util.promisify(cloudinary.api.resources_by_ids);
 
 export async function uploadImage(imagePath) {
   const name = path.basename(imagePath);
@@ -33,4 +34,14 @@ export async function uploadImage(imagePath) {
     });
 
   return url;
+}
+
+export async function findImage(imagePath) {
+  const name = path.basename(imagePath);
+}
+
+export default {
+  uploadImage,
+  uploadAsync,
+  resourcesAsync,
 }
