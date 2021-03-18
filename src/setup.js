@@ -100,9 +100,26 @@ async function insertSeriesGenres(series, seriesIDs) {
   }
 }
 
+async function insertUsers(users) {
+  for (const user of users) {
+    try {
+      await db.insertUser(user);
+    } catch (error) {
+      const { code } = error;
+      if (code == 23505) {
+        console.error(`Username '${user.username}' already exists. Skipping...`);
+        continue;
+      }
+    }
+  }
+}
+
 async function setup() {
   await db.clear();
   await db.load();
+
+  const users = await csvData.parseUsers();
+  await insertUsers(users);
 
   const series = await csvData.parseSeries();
   const seriesIDs = await insertSeries(series);
