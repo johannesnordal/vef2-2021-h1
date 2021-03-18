@@ -187,8 +187,10 @@ export async function patchUser(req, res) {
 
 export async function paramCheck(req, res, next) {
     const { id } = req.params;
-    const length = await countUsers();
-    if (!id || id > length) {
+    
+    const user = await findById(id)
+    
+    if (!id || !user) {
         return res.json({ "error": "No such id" })
     }
     next()
@@ -198,4 +200,9 @@ export async function getMe(req,res) {
     const {user} = req;
     let ret = takeOutPassword([user])
     res.json(ret)
+}
+
+export async function patchMeUp(req,res) {
+    const {user} = req;
+    
 }

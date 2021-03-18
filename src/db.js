@@ -110,10 +110,35 @@ export async function insertUser(username,email, password) {
 }
 
 /**
+ * Bara fyrir testing
+ */
+export async function insertAdmin(username,email, password) {
+  // Geymum hashað password!
+  const hashedPassword = await bcrypt.hash(password, 11);
+
+  const q = `
+    INSERT INTO
+      users (username, email, password, admin)
+    VALUES ($1, $2, $3, true)
+    RETURNING *
+  `;
+
+  try {
+      const result = await query(q, [username, email, hashedPassword]);
+      return result.rows[0];
+  } catch (e) {
+      console.error('Gat ekki búið til notanda');
+  }
+
+  return null;
+}
+
+/**
  * Kemur alltaf á eftir requireAuthentication
  */
 export async function isAdmin(req,res, next) {
   const { admin } = req.user;
+  
   if (admin) {
     return next();
   }
