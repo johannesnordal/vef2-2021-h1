@@ -1,7 +1,7 @@
 import neatCsv from 'neat-csv';
 import { readFileAsync } from './utils.js';
 
-async function parseSeries() {
+export async function parseSeries() {
   const raw = await readFileAsync('data/series.csv');
 
   const series = await neatCsv(raw, {
@@ -17,7 +17,7 @@ async function parseSeries() {
   return series;
 }
 
-async function parseSeasons() {
+export async function parseSeasons() {
   const raw = await readFileAsync('data/seasons.csv');
 
   const seasons = await neatCsv(raw, {
@@ -32,7 +32,7 @@ async function parseSeasons() {
   return seasons;
 }
 
-async function parseEpisodes() {
+export async function parseEpisodes() {
   const raw = await readFileAsync('data/episodes.csv');
 
   const episodes = await neatCsv(raw, {
@@ -47,8 +47,32 @@ async function parseEpisodes() {
   return episodes;
 }
 
+export function toBool(value) {
+  if (value === 'true') {
+    return true;
+  }
+  return false;
+}
+
+export async function parseUsers() {
+  const raw = await readFileAsync('data/users.csv');
+
+  const users = await neatCsv(raw, {
+    mapValues: ({ header, index, value }) => {
+      if (header === 'admin') {
+        return toBool(value);
+      }
+      return value;
+    }
+  });
+
+  return users;
+}
+
 export default {
   parseSeries,
   parseSeasons,
   parseEpisodes,
+  parseUsers,
+  toBool,
 }
