@@ -9,7 +9,7 @@ dotenv.config();
 
 const {
   JWT_SECRET: jwtSecret,
-  TOKEN_LIFETIME: tokenLifetime = 60, //60 sek
+  TOKEN_LIFETIME: tokenLifetime = 6000, //600 sek
   DATABASE_URL: databaseUrl,
 } = process.env;
 
@@ -36,6 +36,9 @@ async function strat(data, next) {
 
 passport.use(new Strategy(jwtOptions, strat));
 
+/**
+ * Athugar hvort notandi er skráður inn
+ */
 export function requireAuthentication(req, res, next) {
   return passport.authenticate(
     'jwt',

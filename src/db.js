@@ -88,6 +88,7 @@ export async function insertSerieGenre(serieID, genre) {
   await query(q, [serieID, genre]);
 }
 
+<<<<<<< HEAD
 export async function insertUser(user) {
   const { admin, password, ...rest } = user;
 
@@ -104,7 +105,8 @@ export async function insertUser(user) {
   const q = `INSERT INTO users (${keys}) VALUES (${paramString}) RETURNING *`;
  
   try {
-    await query(q, values);
+    const result = await query(q, values);
+    return result.row[0];
   } catch (e) {
     console.error('Gat ekki búið til notanda');
   }
@@ -132,6 +134,18 @@ export async function insertUserSerie(data) {
   const q = `INSERT INTO user_tvshows (${keys}) VALUES (${paramString})`;
 
   await query(q, values);
+}
+
+/**
+ * Kemur alltaf á eftir requireAuthentication
+ */
+export async function isAdmin(req,res, next) {
+  const { admin } = req.user;
+  if (admin) {
+    return next();
+  }
+  return res.json({"error": "insufficient authorization"})
+>>>>>>> main
 }
 
 export default {
