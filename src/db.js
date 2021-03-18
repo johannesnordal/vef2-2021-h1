@@ -74,10 +74,10 @@ export const insert = {
     const q = `INSERT INTO users (${keys}) VALUES (${paramString}) RETURNING *`;
    
     try {
-      const result = await query(q, values);
-      return result.row[0];
+      const { rows: [ res ] } = await query(q, values);
+      return res;
     } catch (e) {
-      console.error('Gat ekki búið til notanda');
+      console.error(e);
     }
 
     return null;
@@ -100,7 +100,7 @@ export const insert = {
     const values = Object.values(rest);
 
     const paramString = toParamString(values.length);
-    const q = `INSERT INTO user_tvshows (${keys}) VALUES (${paramString})`;
+    const q = `INSERT INTO users_tvshows (${keys}) VALUES (${paramString})`;
 
     await query(q, values);
   }
@@ -136,20 +136,57 @@ export const select = {
     const { rows } = await query(q, [serieID]);
 
     return rows.map((row) => row.genre);
-  }
+  },
+
+  serieSeason: async (serieID, number) => {
+    const q = 'select * from seasons where serieid = $1 and number = $2';
+
+    const { rows: [ res ] } = await query(q, [serieID, number]);
+
+    return res;
+  },
+
+  serieSeasons: async (serieID) => {
+    const q = 'select * from seasons where serieid = $1';
+
+    const { rows } = await query(q, [serieID]);
+
+    return rows;
+  },
+
+  pageOfUsers: async (offset = 0, limit = 10) => {
+    const values = [ offset, limit ];
+
+    const q = 'select * from users order by id offset $1 limit $2';
+
+    const { rows } = await query(q, values);
+
+    return rows;
+  },
 }
 
-export const check = {
-  /**
-   * Kemur alltaf á eftir requireAuthentication
-   */
-  isAdmin: async (req, res, next) => {
-    const { admin } = req.user;
-    if (admin) {
-      return next();
+// Notum remove því delete er frátekið í JavaScript
+// og del er of nálægt því að vera deli.
+export const remove = {
+  serie: async (serieID) => {
+    const q = 'delete from tvshows where id = $1 returning *';
+
+    try {
+      const { rows } = await query(q, [serieID]);
+      return rows;
+    } catch (e) {
+      console.error(`Gat ekki eytt seríu ${serieID}.`);
     }
-    return res.json({"error": "insufficient authorization"})
-  }
+
+    return null;
+  },
+
+  season: async (seasonID) => {
+  },
+
+  episode: async (episdoeID) => {
+
+  },
 }
 
 export async function clear() {
@@ -186,6 +223,6 @@ export default {
   insert,
   select,
   update,
-  check,
+  remove,
   toParamString,
 }

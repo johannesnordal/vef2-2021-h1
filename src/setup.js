@@ -36,7 +36,7 @@ async function insertSeries(series) {
 
     await setImageURL(rest, image);
 
-    const id = await db.insertSerie(rest);
+    const id = await db.insert.serie(rest);
 
     seriesIDs.set(csvID, id);
   }
@@ -46,7 +46,7 @@ async function insertSeries(series) {
 
 async function insertGenres(genres) {
   for (const genre of genres) {
-    await db.insertGenre(genre);
+    await db.insert.genre(genre);
   }
 }
 
@@ -64,18 +64,15 @@ async function insertSeasons(seasons, seriesIDs) {
 
     rest.serieId = serieID;
 
-    await db.insertSeason(rest);
+    await db.insert.season(rest);
   }
 }
 
 async function insertEpisodes(episodes, seriesIDs) {
   for (const episode of episodes) {
-    const q = `SELECT id FROM seasons WHERE serieId = $1 AND number = $2`;
-
     const serieID = seriesIDs.get(episode.serieId);
-    const { rows: [ res ] } = await db.query(q, [serieID, episode.season]);
 
-    const seasonId = res.id;
+    const season = await db.select.serieSeason(serieID, episode.season);
 
     const { serie, serieId, airDate, ...rest } = episode;
 
@@ -83,9 +80,9 @@ async function insertEpisodes(episodes, seriesIDs) {
       rest.airDate = airDate;
     }
 
-    rest.seasonId = seasonId;
+    rest.seasonId = season.id;
 
-    await db.insertEpisode(rest);
+    await db.insert.episode(rest);
   }
 }
 
@@ -95,22 +92,15 @@ async function insertSeriesGenres(series, seriesIDs) {
     const genres = serie.genres.split(',');
 
     for (const genre of genres) {
-      await db.insertSerieGenre(serieID, genre);
+      await db.insert.serieGenre(serieID, genre);
     }
   }
 }
 
 async function insertUsers(users) {
   for (const user of users) {
-    try {
-      await db.insertUser(user);
-    } catch (error) {
-      const { code } = error;
-      if (code == 23505) {
-        console.error(`Username '${user.username}' already exists. Skipping...`);
-        continue;
-      }
-    }
+    const res = await db.insert.user(user);
+    console.log(res);
   }
 }
 

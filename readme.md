@@ -125,15 +125,15 @@ Ef beðið er um einingu eða reynt að framkvæma aðgerð sem ekki er leyfi fy
 ### Sjónvarpsþættir
 
 * `/tv`
-  * - [ ] `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
-  * - [ ] `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
+  * - [X] `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
+  * - [X] `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id`
   * - [ ] `GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt, fylki af tegundum sjónvarpsþáttar (genres), fylki af seasons, rating notanda, staða notanda
   * - [ ] `PATCH`, uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
   * - [ ] `DELETE`, eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id/season/`
-  * - [ ] `GET` skilar fylki af öllum seasons fyrir sjónvarpsþátt
-  * - [ ] `POST` býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
+  * - [X] `GET` skilar fylki af öllum seasons fyrir sjónvarpsþátt
+  * - [X] `POST` býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
 * `/tv/:id/season/:id`
   * - [ ] `GET` skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
   * - [ ] `DELETE`, eyðir season, aðeins ef notandi er stjórnandi
