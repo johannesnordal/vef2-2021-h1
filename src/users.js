@@ -73,7 +73,7 @@ async function countUsers() {
     }
 
     return null;
-} 
+}
 
 export async function getUsers(req, res) {
     let { offset = 0, limit = 10 } = req.query;
@@ -85,6 +85,8 @@ export async function getUsers(req, res) {
     } else {
         users = await listOfUsers(parseInt(0), parseInt(10));
     }
+    const newUsers = takeOutPassword(users);
+
     offset = parseInt(offset);
     limit = parseInt(limit)
 
@@ -96,13 +98,14 @@ export async function getUsers(req, res) {
     }
     if (offset > 0 && offset < limit) {
         prev = { "href": `localhost:3000/users?offset=${0}&limit=${limit}` }
-    } else if(offset > 0){
+    } else if (offset > 0) {
         prev = { "href": `localhost:3000/users?offset=${offset - limit}&limit=${limit}` }
     }
+
     let obj = {
         "limit": limit,
         "offset": offset,
-        "items": users,
+        "items": newUsers,
         "_links": {
             "self": self,
             "prev": prev,
@@ -118,7 +121,6 @@ export async function getUsers(req, res) {
  */
 export async function listOfUsers(offset = 0, limit = 10) {
     const values = [offset, limit];
-
     let result = [];
 
     try {
@@ -128,10 +130,72 @@ export async function listOfUsers(offset = 0, limit = 10) {
 
         if (queryResult && queryResult.rows) {
             result = queryResult.rows;
+
         }
     } catch (e) {
         console.error('Error finding users', e);
     }
-
     return result;
+}
+
+/**
+ * Tekur innfylki af users objects
+ * Skila fylki af user objects mínus password
+ */
+function takeOutPassword(users) {
+    let newUsers = [];
+
+    for (let user of users) {
+
+        let obj = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "admin": user.admin,
+            "created": user.created,
+            "updated": user.updated
+        }
+        newUsers.push(obj);
+    }
+    return newUsers;
+}
+
+
+export async function getSingleUser(req, res) {
+    const { id } = req.params;
+    const user = await findById(id);
+
+    const result = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "admin": user.admin,
+        "created": user.created,
+        "updated": user.updated
+    }
+    return res.json(result)
+}
+
+export async function patchUser(req, res) {
+    const { admin } = req.body;
+    const { id } = req.params;
+    if (admin === false || admin === "false") {
+        console.log(typeof admin + " " + id)
+
+    }
+}
+
+export async function paramCheck(req, res, next) {
+    const { id } = req.params;
+    const length = await countUsers();
+    if (!id || id > length) {
+        return res.json({ "error": "No such id" })
+    }
+    next()
+}
+
+export async function getMe(req,res) {
+    const {user} = req;
+    let ret = takeOutPassword([user])
+    res.json(ret)
 }

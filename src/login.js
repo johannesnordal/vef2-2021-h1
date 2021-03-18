@@ -26,7 +26,6 @@ const jwtOptions = {
 async function strat(data, next) {
   // fáum id gegnum data sem geymt er í token
   const user = await findById(data.id);
-
   if (user) {
     next(null, user);
   } else {
@@ -57,6 +56,7 @@ export function requireAuthentication(req, res, next) {
 
       // Látum notanda vera aðgengilegan í rest af middlewares
       req.user = user;
+            
       return next();
     },
   )(req, res, next);
