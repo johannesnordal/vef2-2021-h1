@@ -6,7 +6,8 @@ import {
     getSingleUser,
     patchUser,
     paramCheck,
-    getMe
+    getMe,
+    patchMeUp
 } from './../users.js'
 import {
     login,
@@ -14,8 +15,7 @@ import {
 } from './../login.js';
 import { catchErrors } from './../utils.js'
 import { register } from './../register.js'
-import { isAdmin } from './../db.js'
-
+import { check } from './../db.js'
 
 
 
@@ -37,6 +37,16 @@ export const validationMiddleware = [
         .matches(new RegExp(emailPattern))
         .withMessage('email is required, max 256 characters')
 ];
+export const validationUpdateUser = [
+    body('password')
+        .isLength({ min: 10, max: 256 })
+        .optional({ nullable: true })
+        .withMessage('min 10 characters, max 256 characters'),
+    body('email')
+        .matches(new RegExp(emailPattern))
+        .optional({ nullable: true })
+        .withMessage('Needs to be email, max 256 characters')
+];
 export async function validationCheck(req, res, next) {
 
     const validation = validationResult(req);
@@ -54,7 +64,7 @@ router.post('/register',
     validationMiddleware,
     validationCheck,
     catchErrors(register)
-);
+); 
 router.post('/login',
     validationMiddleware,
     validationCheck,
@@ -66,23 +76,25 @@ router.get('/me',
 );
 router.patch('/me',
     requireAuthentication,
+    validationUpdateUser,
+    validationCheck,
     catchErrors(patchMeUp)
 ); // Óklárað
 router.get('/:id',
     requireAuthentication,
-    isAdmin,
+    check.isAdmin,
     paramCheck,
     catchErrors(getSingleUser)
 );
 router.patch('/:id',
     requireAuthentication,
-    isAdmin,
+    check.isAdmin,
     paramCheck,
     catchErrors(patchUser)
-); // Óklárað
+);
 router.get('/',
     requireAuthentication,
-    isAdmin,
+    check.isAdmin,
     catchErrors(getUsers)
 );
 

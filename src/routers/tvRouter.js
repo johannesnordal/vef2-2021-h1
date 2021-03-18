@@ -1,9 +1,9 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 
-
+import {getSeries} from './../tv.js'
 import { catchErrors } from './../utils.js'
-import { isAdmin } from './../db.js'
+import { check } from './../db.js'
 
 
 
@@ -21,9 +21,6 @@ export const validationMiddleware = [ // BREYTA
     body('password')
         .isLength({ min: 10, max: 256 })
         .withMessage('password is required, min 10 characters, max 256 characters'),
-    body('email')
-        .matches(new RegExp(emailPattern))
-        .withMessage('email is required, max 256 characters')
 ];
 export async function validationCheck(req, res, next) {
 
@@ -36,4 +33,4 @@ export async function validationCheck(req, res, next) {
     return next();
 }
 
-router.post('/',insertSerie) // Býr til sjónvarpsþátt
+router.get('/',getSeries) // Býr til sjónvarpsþátt
