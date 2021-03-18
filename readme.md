@@ -125,7 +125,7 @@ Ef beðið er um einingu eða reynt að framkvæma aðgerð sem ekki er leyfi fy
 ### Sjónvarpsþættir
 
 * `/tv`
-  * `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
+  * - [ ] `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
   * `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id`
   * `GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt, fylki af tegundum sjónvarpsþáttar (genres), fylki af seasons, rating notanda, staða notanda
