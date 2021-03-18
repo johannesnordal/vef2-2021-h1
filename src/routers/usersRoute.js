@@ -7,7 +7,8 @@ import {
     patchUser,
     paramCheck,
     getMe,
-    patchMeUp
+    patchMeUp,
+    isAdmin
 } from './../users.js'
 import {
     login,
@@ -15,7 +16,6 @@ import {
 } from './../login.js';
 import { catchErrors } from './../utils.js'
 import { register } from './../register.js'
-import { check } from './../db.js'
 
 
 
@@ -82,19 +82,19 @@ router.patch('/me',
 ); // Óklárað
 router.get('/:id',
     requireAuthentication,
-    check.isAdmin,
+    isAdmin,
     paramCheck,
     catchErrors(getSingleUser)
 );
 router.patch('/:id',
     requireAuthentication,
-    check.isAdmin,
+    isAdmin,
     paramCheck,
     catchErrors(patchUser)
 );
 router.get('/',
     requireAuthentication,
-    check.isAdmin,
+    isAdmin,
     catchErrors(getUsers)
 );
 

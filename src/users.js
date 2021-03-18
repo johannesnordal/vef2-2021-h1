@@ -75,6 +75,14 @@ async function countUsers() {
     return null;
 }
 
+export async function isAdmin(req,res, next) {
+    const { admin } = req.user;
+    if (admin) {
+      return next();
+    }
+    return res.json({"error": "insufficient authorization"})
+  }
+
 export async function getUsers(req, res) {
     let { offset = 0, limit = 10 } = req.query;
     const q = 'SELECT * FROM users';

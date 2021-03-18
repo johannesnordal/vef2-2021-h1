@@ -3,7 +3,6 @@ import { body, validationResult } from 'express-validator';
 
 import {getSeries} from './../tv.js'
 import { catchErrors } from './../utils.js'
-import { check } from './../db.js'
 
 
 
