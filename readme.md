@@ -126,9 +126,9 @@ Ef beðið er um einingu eða reynt að framkvæma aðgerð sem ekki er leyfi fy
 
 * `/tv`
   * - [ ] `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
-  * - [ ]`POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
+  * - [ ] `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id`
-  * - [ ]`GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt, fylki af tegundum sjónvarpsþáttar (genres), fylki af seasons, rating notanda, staða notanda
+  * - [ ] `GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt, fylki af tegundum sjónvarpsþáttar (genres), fylki af seasons, rating notanda, staða notanda
   * - [ ] `PATCH`, uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
   * - [ ] `DELETE`, eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
 * `/tv/:id/season/`
