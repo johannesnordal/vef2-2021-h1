@@ -125,41 +125,83 @@ Ef beðið er um einingu eða reynt að framkvæma aðgerð sem ekki er leyfi fy
 ### Sjónvarpsþættir
 
 * `/tv`
-  * - [X] `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
-  * - [X] `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
+  * - [ ] `GET` skilar síðum af sjónvarpsþáttum með grunnupplýsingum
+    + - [X] Database
+    + - [ ] Route
+  * - [ ] `POST` býr til nýjan sjónvarpsþátt, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id`
   * - [ ] `GET` skilar stöku sjónvarpsþáttum með grunnupplýsingum, meðal einkunn sjónvarpsþáttar, fjölda einkunna sem hafa verið skráðar fyrir sjónvarpsþátt, fylki af tegundum sjónvarpsþáttar (genres), fylki af seasons, rating notanda, staða notanda
+    + - [ ] Database
+    + - [ ] Route
   * - [ ] `PATCH`, uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `DELETE`, eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id/season/`
-  * - [X] `GET` skilar fylki af öllum seasons fyrir sjónvarpsþátt
-  * - [X] `POST` býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
+  * - [ ] `GET` skilar fylki af öllum seasons fyrir sjónvarpsþátt
+    + - [X] Database
+    + - [ ] Route
+  * - [ ] `POST` býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id/season/:id`
   * - [ ] `GET` skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `DELETE`, eyðir season, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id/season/:id/episode/`
   * - [ ] `POST` býr til nýjan þátt í season, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id/season/:id/episode/:id`
   * - [ ] `GET` skilar upplýsingum um þátt
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `DELETE`, eyðir þætti, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/genres`
   * - [ ] `GET` skilar síðu af tegundum (genres)
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `POST` býr til tegund, aðeins ef notandi er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 
 ### Notendur
 
 * `/users/`
   * - [ ] `GET` skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/users/:id`
   * - [ ] `GET` skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `PATCH` breytir hvort notandi sé stjórnandi eða ekki, aðeins ef notandi sem framkvæmir er stjórnandi og er ekki að breyta sér sjálfum
+    + - [X] Database
+    + - [ ] Route
 * `/users/register`
-  * - [ ] `POST` staðfestir og býr til notanda. Skilar auðkenni og netfangi. Notandi sem búinn er til skal aldrei vera stjórnandi
+  * - [ ] `POST` staðfestir og býr til notanda. Skilar auðkenni (hvernig auðkenni?) og netfangi. Notandi sem búinn er til skal aldrei vera stjórnandi
+    + - [X] Database
+    + - [ ] Route
 * `/users/login`
   * - [ ] `POST` með netfangi og lykilorði skilar token ef gögn rétt
+    + - [ ] Database?
+    + - [ ] Route
 * `/users/me`
   * - [ ] `GET` skilar upplýsingum um notanda sem á token, auðkenni og netfangi, aðeins ef notandi innskráður
+    + - [ ] Database?
+    + - [ ] Route
   * - [ ] `PATCH` uppfærir netfang, lykilorð eða bæði ef gögn rétt, aðeins ef notandi innskráður
+    + - [X] Database
+    + - [ ] Route
 
 Aldrei skal skila eða sýna hash fyrir lykilorð.
 
@@ -167,14 +209,28 @@ Aldrei skal skila eða sýna hash fyrir lykilorð.
 
 * `/tv/:id/rate`
   * - [ ] `POST`, skráir einkunn innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `PATCH`, uppfærir einkunn innskráðs notanda á sjónvarpsþætti
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `DELETE`, eyðir einkunn innskráðs notanda á sjónvarpsþætti
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id/state`
   * - [ ] `POST`, skráir stöðu innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `PATCH`, uppfærir stöðu innskráðs notanda á sjónvarpsþætti
+    + - [X] Database
+    + - [ ] Route
   * - [ ] `DELETE`, eyðir stöðu innskráðs notanda á sjónvarpsþætti
+    + - [X] Database
+    + - [ ] Route
 * `/tv/:id`
   *  - [ ] Ef notandi er innskráður skal sýna einkunn og stöðu viðkomandi á sjónvarpsþætti.
+    + - [ ] Database
+    + - [ ] Route
 
 ## Annað
 
