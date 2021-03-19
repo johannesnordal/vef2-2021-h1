@@ -14,6 +14,33 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
+function toParamString(n) {
+  return [...Array(n).keys()].map((index) => `$${index + 1}`);
+}
+
+export async function clear() {
+  const clear = await readFileAsync('./schema/clear.sql');
+  await query(clear.toString('utf8'));
+}
+
+export async function load() {
+  const schema = await readFileAsync('./schema/schema.sql');
+  await query(schema.toString('utf8'));
+}
+
+export async function query(q, values = []) {
+  const client = await pool.connect();
+
+  let result;
+  try {
+    result = await client.query(q, values);
+  } finally {
+    client.release();
+  }
+
+  return result;
+}
+
 export const insert = {
   serie: async (serie) => {
     const keys = Object.keys(serie);
@@ -107,17 +134,23 @@ export const insert = {
 }
 
 export const update = {
-  userToAdmin: async (id) => {
-    const q = `UPDATE users SET admin = TRUE WHERE id = $1`;
+  user: async (userData) => {
+    const { id, ...rest } = userData;
 
-    try {
-      await query(q, [id]);
-      return true;
-    } catch (e) {
-      console.error(`Gat ekki gert notanda ${id} að stjórnanda.`);
+    if (!id) {
+      return;
     }
 
-    return false;
+    const keys = Object.keys(rest);
+    const values = Object.values(rest);
+
+    const paramString = keys.map((value, index, arr) => `${value} = $${index+2}`);
+
+    const q = `update users set ${paramString} where id = $1`;
+
+    values.unshift(id);
+
+    await query(q, values);
   }
 }
 
@@ -163,10 +196,16 @@ export const select = {
 
     return rows;
   },
+
+  numberOfAdmins: async () => {
+    const q = 'select count(*) from users where admin = true';
+
+    const { rows: { 0: { count } } } = await query(q);
+
+    return Number(count);
+  },
 }
 
-// Notum remove því delete er frátekið í JavaScript
-// og del er of nálægt því að vera deli.
 export const remove = {
   serie: async (serieID) => {
     const q = 'delete from tvshows where id = $1 returning *';
@@ -185,35 +224,7 @@ export const remove = {
   },
 
   episode: async (episdoeID) => {
-
   },
-}
-
-export async function clear() {
-  const clear = await readFileAsync('./schema/clear.sql');
-  await query(clear.toString('utf8'));
-}
-
-export async function load() {
-  const schema = await readFileAsync('./schema/schema.sql');
-  await query(schema.toString('utf8'));
-}
-
-export async function query(q, values = []) {
-  const client = await pool.connect();
-
-  let result;
-  try {
-    result = await client.query(q, values);
-  } finally {
-    client.release();
-  }
-
-  return result;
-}
-
-export function toParamString(n) {
-  return [...Array(n).keys()].map((index) => `$${index + 1}`);
 }
 
 export default {
@@ -224,5 +235,4 @@ export default {
   select,
   update,
   remove,
-  toParamString,
 }
