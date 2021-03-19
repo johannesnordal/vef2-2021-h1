@@ -146,11 +146,13 @@ export const update = {
 
     const paramString = keys.map((value, index, arr) => `${value} = $${index+2}`);
 
-    const q = `update users set ${paramString} where id = $1`;
+    const q = `update users set ${paramString} where id = $1 returning *`;
 
     values.unshift(id);
 
-    await query(q, values);
+    const { rows } = await query(q, values);
+
+    return rows[0];
   }
 }
 
