@@ -67,5 +67,6 @@ create table users_tvshows
     constraint tvshow foreign key (tvshow) references tvshows(id),
     constraint "user" foreign key ("user") references users(id),
     viewStatus status,
-    rating integer check (rating >= 0 and rating <= 5)
+    rating integer check (rating >= 0 and rating <= 5),
+    unique(tvshow, "user")
 );
