@@ -1,7 +1,11 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 
-import {getSeries} from './../tv.js'
+import {
+    series,
+    singleSerie,
+    seriesSeason
+} from './../tv.js'
 import { catchErrors } from './../utils.js'
 
 
@@ -32,4 +36,7 @@ export async function validationCheck(req, res, next) {
     return next();
 }
 
-router.get('/',getSeries) // Býr til sjónvarpsþátt
+/** LessGetit */
+router.get('/', catchErrors(series))
+router.get('/:id', catchErrors(singleSerie))
+router.get('/:id/season', catchErrors(seriesSeason))
