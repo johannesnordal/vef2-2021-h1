@@ -90,7 +90,7 @@ export const insert = {
   },
 
   user: async (user) => {
-    const { password, ...rest } = user;
+    const { password, admin, ...rest } = user;
 
     rest.password = await bcrypt.hash(password, 11);
 
@@ -111,12 +111,12 @@ export const insert = {
   },
 
   userSerie: async (data) => {
-    const { viewStatus, rating, ...rest } = data;
+    const { state, rating, ...rest } = data;
 
-    if (!viewStatus && !rating) return;
+    if (!state && !rating) return;
 
-    if (viewStatus) {
-      rest.viewStatus = viewStatus;
+    if (state) {
+      rest.state = state;
     }
 
     if (rating) {
@@ -127,28 +127,7 @@ export const insert = {
     const values = Object.values(rest);
 
     const paramString = toParamString(values.length);
-    const q = `INSERT INTO users_tvshows (${keys}) VALUES (${paramString})`;
-
-    await query(q, values);
-  }
-}
-
-export const update = {
-  user: async (userData) => {
-    const { id, ...rest } = userData;
-
-    if (!id) {
-      return;
-    }
-
-    const keys = Object.keys(rest);
-    const values = Object.values(rest);
-
-    const paramString = keys.map((value, index, arr) => `${value} = $${index+2}`);
-
-    const q = `update users set ${paramString} where id = $1 returning *`;
-
-    values.unshift(id);
+    const q = `INSERT INTO users_tvshows (${keys}) VALUES (${paramString}) RETURNING *`;
 
     const { rows } = await query(q, values);
 
@@ -156,7 +135,100 @@ export const update = {
   }
 }
 
+export const update = {
+  toParamString: (params) => {
+    const { set, where } = params;
+
+    const setKeys = Object.keys(set);
+    const setValues = Object.values(set);
+
+    const whereKeys = Object.keys(where);
+    const whereValues = Object.values(where);
+
+    const offset = whereKeys.length + 1;
+    const setParams = setKeys.map((value, index) => `${value} = $${index + offset}`);
+
+    const whereParams = whereKeys.map((value, index) => {
+      return `${value} = $${index + 1}`
+    }).toString().replace(',', ' and ');
+
+    const values = whereValues.concat(setValues);
+
+    const paramString = `set ${setParams} where ${whereParams}`;
+
+    return {
+      paramString,
+      values,
+    };
+  },
+
+  serie: async (data) => {
+    const { id, ...rest } = data;
+
+    if (!id) {
+      return;
+    }
+
+    const { paramString, values } = update.toParamString({
+      set: rest,
+      where: { id },
+    });
+
+    const q = `update tvshows ${paramString} returning *`;
+
+    const { rows } = await query(q, values);
+
+    return rows;
+  },
+
+  user: async (userData) => {
+    const { id, ...rest } = userData;
+
+    if (!id) {
+      return;
+    }
+
+    const { paramString, values } = update.toParamString({
+      set: rest,
+      where: { id },
+    });
+
+    const q = `update users ${paramString} returning *`;
+
+    const { rows } = await query(q, values);
+
+    return rows[0];
+  },
+
+  userSerie: async (userSerieData) => {
+    const { tvshowId, userId, ...rest } = userSerieData;
+
+    if (!tvshowId || !userId || !rest) {
+      return null;
+    }
+
+    const { paramString, values } = update.toParamString({
+      set: rest,
+      where: { userId, tvshowId },
+    });
+
+    const q = `update users_tvshows ${paramString} returning *`;
+
+    const { rows } = await query(q, values);
+
+    return rows[0];
+  },
+}
+
 export const select = {
+  all: async (table) => {
+    const q = `select * from ${table}`;
+
+    const { rows } = await query(q);
+
+    return rows;
+  },
+
   serie: async (serieID) => {
     const q = 'select * from tvshows where id = $1';
 
@@ -189,6 +261,34 @@ export const select = {
     return rows;
   },
 
+  episode: async (episodeID) => {
+    const q = 'select * from episodes where id = $1';
+
+    const { rows } = await query(q, [episodeID]);
+
+    return rows[0];
+  },
+
+  user: async (userID) => {
+    const q = 'select * from users where id = $1';
+
+    const { rows } = await query(q, [userID]);
+
+    return rows[0];
+  },
+
+  pageOfGenres: async(offset = 0, limit = 10) => {
+    const values = [ offset, limit ];
+
+    const q = 'select * from genres order by name offset $1 limit $2';
+
+    const { rows } = await query(q, values);
+
+    const genres = rows.map((genre) => genre.name);
+
+    return genres;
+  },
+
   pageOfUsers: async (offset = 0, limit = 10) => {
     const values = [ offset, limit ];
 
@@ -212,20 +312,25 @@ export const remove = {
   serie: async (serieID) => {
     const q = 'delete from tvshows where id = $1 returning *';
 
-    try {
-      const { rows } = await query(q, [serieID]);
-      return rows;
-    } catch (e) {
-      console.error(`Gat ekki eytt seríu ${serieID}.`);
-    }
+    const { rows } = await query(q, [serieID]);
 
-    return null;
+    return rows[0];
   },
 
   season: async (seasonID) => {
+    const q = 'delete from seasons where id = $1 returning *';
+
+    const { rows } = await query(q, [seasonID]);
+
+    return rows[0];
   },
 
-  episode: async (episdoeID) => {
+  episode: async (episodeID) => {
+    const q = 'delete from seasons where id = $1 returning *';
+
+    const { rows } = await query(q, [episodeID]);
+
+    return rows[0];
   },
 }
 

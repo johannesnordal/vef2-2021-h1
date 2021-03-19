@@ -21,8 +21,8 @@ create table tvshows_genres
 (
     tvshow integer not null,
     genre text not null,
-    constraint tvshow foreign key (tvshow) references tvshows(id),
-    constraint genre foreign key (genre) references genres(name)
+    constraint tvshow foreign key (tvshow) references tvshows(id) on delete cascade,
+    constraint genre foreign key (genre) references genres(name) on delete cascade
 );
 
 create table seasons
@@ -34,7 +34,7 @@ create table seasons
     overview text,
     image text not null, -- URL
     serieId integer not null,
-    constraint serieId foreign key (serieId) references tvshows(id)
+    constraint serieId foreign key (serieId) references tvshows(id) on delete cascade
 );
 
 create table episodes
@@ -46,7 +46,7 @@ create table episodes
     overview text,
     season integer not null,
     seasonId integer not null,
-    constraint season foreign key (season) references seasons(id)
+    constraint season foreign key (season) references seasons(id) on delete cascade
 );
 
 create table users
@@ -58,15 +58,13 @@ create table users
     admin boolean default false
 );
 
-create type status as ENUM('Langar að horfa', 'Er að horfa', 'Hef horft');
-
 create table users_tvshows
 (
-    tvshow integer not null,
-    "user" integer not null,
-    constraint tvshow foreign key (tvshow) references tvshows(id),
-    constraint "user" foreign key ("user") references users(id),
-    viewStatus status,
+    tvshowId integer not null,
+    userId integer not null,
+    constraint tvshowId foreign key (tvshowId) references tvshows(id) on delete cascade,
+    constraint userId foreign key (userId) references users(id) on delete cascade,
+    state text,
     rating integer check (rating >= 0 and rating <= 5),
-    unique(tvshow, "user")
+    unique(tvshowId, userId)
 );
