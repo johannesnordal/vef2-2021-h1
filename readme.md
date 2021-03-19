@@ -229,8 +229,8 @@ Aldrei skal skila eða sýna hash fyrir lykilorð.
     + - [ ] Route
 * `/tv/:id`
   *  - [ ] Ef notandi er innskráður skal sýna einkunn og stöðu viðkomandi á sjónvarpsþætti.
-    + - [ ] Database
-    + - [ ] Route
+     + - [ ] Database
+     + - [ ] Route
 
 ## Annað
 
