@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { query } from './db.js'
+import { query, update } from './db.js'
 
 
 export async function comparePasswords(password, hash) {
@@ -74,6 +74,14 @@ async function countUsers() {
 
     return null;
 }
+
+export async function isAdmin(req,res, next) {
+    const { admin } = req.user;
+    if (admin) {
+      return next();
+    }
+    return res.json({"error": "insufficient authorization"})
+  }
 
 export async function getUsers(req, res) {
     let { offset = 0, limit = 10 } = req.query;
@@ -164,38 +172,47 @@ function takeOutPassword(users) {
 export async function getSingleUser(req, res) {
     const { id } = req.params;
     const user = await findById(id);
-
-    const result = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "admin": user.admin,
-        "created": user.created,
-        "updated": user.updated
-    }
-    return res.json(result)
+    const result = takeOutPassword([user])
+    return res.json(result[0])
 }
 
 export async function patchUser(req, res) {
     const { admin } = req.body;
     const { id } = req.params;
+    let user;
     if (admin === false || admin === "false") {
-        console.log(typeof admin + " " + id)
-
+        user = await update.userToAdmin(id, false)
+        res.json(takeOutPassword(user))
     }
+    user = await update.userToAdmin(id, true)
+    res.json(takeOutPassword(user))
 }
 
 export async function paramCheck(req, res, next) {
     const { id } = req.params;
-    const length = await countUsers();
-    if (!id || id > length) {
+
+    const user = await findById(id)
+
+    if (!id || !user) {
         return res.json({ "error": "No such id" })
     }
     next()
 }
 
-export async function getMe(req,res) {
-    const {user} = req;
+export async function getMe(req, res) {
+    const { user } = req;
     let ret = takeOutPassword([user])
     res.json(ret)
+}
+
+export async function patchMeUp(req, res) {
+    const { user } = req;
+    const { email, password } = req.body;
+
+    console.log(user)
+    /** Laga þegar update.user er virkt */
+    update.user({
+        "email": email,
+        "password": password
+    });
 }
