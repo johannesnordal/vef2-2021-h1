@@ -221,6 +221,14 @@ export const update = {
 }
 
 export const select = {
+  all: async (table) => {
+    const q = `select * from ${table}`;
+
+    const { rows } = await query(q);
+
+    return rows;
+  },
+
   serie: async (serieID) => {
     const q = 'select * from tvshows where id = $1';
 
