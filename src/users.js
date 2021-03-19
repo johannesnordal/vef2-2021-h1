@@ -181,10 +181,16 @@ export async function patchUser(req, res) {
     const { id } = req.params;
     let user;
     if (admin === false || admin === "false") {
-        user = await update.userToAdmin(id, false)
+        user = await update.user({
+            "id": id, 
+            "admin":false
+        })
         res.json(takeOutPassword(user))
     }
-    user = await update.userToAdmin(id, true)
+    user = await update.user({
+        "id": id,
+        "admin": true
+    })
     res.json(takeOutPassword(user))
 }
 

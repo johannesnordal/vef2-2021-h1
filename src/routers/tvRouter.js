@@ -2,14 +2,10 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 
 import {
-    series,
-    singleSerie,
-    seriesSeason
+    get
 } from './../tv.js'
 import { catchErrors } from './../utils.js'
-
-
-
+import {router as seasonRouter} from './seasonRouter.js'
 
 
 export const router = express.Router();
@@ -37,6 +33,9 @@ export async function validationCheck(req, res, next) {
 }
 
 /** LessGetit */
-router.get('/', catchErrors(series))
-router.get('/:id', catchErrors(singleSerie))
-router.get('/:id/season', catchErrors(seriesSeason))
+router.get('/', catchErrors(get.series))
+router.get('/:id', catchErrors(get.singleSerie))
+router.get('/:id/season', catchErrors(get.seasons))
+router.get('/:id/season/:seasonID', catchErrors(get.singleSeason))
+router.get('/tv/:id/season/:seasonID/episode/:episodeID',catchErrors(get.singleEpisode))
+//router.use('/:id/season', seasonRouter);
