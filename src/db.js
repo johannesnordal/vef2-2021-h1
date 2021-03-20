@@ -61,15 +61,22 @@ export const insert = {
     await query(q, [genre]);
   },
 
-  season: async (season) => {
-    const keys = Object.keys(season);
-    const values = Object.values(season);
+  season: async (seasonData) => {
+    const keys = Object.keys(seasonData);
+    const values = Object.values(seasonData);
 
     const paramString = toParamString(values.length);
 
-    const q = `insert into seasons (${keys}) values (${paramString})`;
+    const q = `insert into seasons (${keys}) values (${paramString}) returning *`;
 
-    await query(q, values);
+    try {
+      const { rows } = await query(q, values);
+      return rows;
+    } catch (e) {
+      return {
+        error: `Season með number ${seasonData.number} hefur nú þegar verið skráð fyrir þessa seríu`,
+      };
+    }
   },
 
   episode: async (episode) => {
@@ -230,11 +237,11 @@ export const select = {
   },
 
   serieGenres: async (serieID) => {
-    const q = 'select genre from tvshows_genres where tvshow = $1';
+    const q = 'select genre as name from tvshows_genres where tvshow = $1';
 
-    const { rows } = await query(q, [serieID]);
+    const { rows: genres } = await query(q, [serieID]);
 
-    return rows.map((row) => row.genre);
+    return genres
   },
 
   serieSeason: async (serieID, number) => {
@@ -267,6 +274,28 @@ export const select = {
     const { rows } = await query(q, [userID]);
 
     return rows[0];
+  },
+
+  userSerieStateAndRating: async (serieID, userID) => {
+    const q = `
+      select state, rating
+      from users_tvshows
+      where tvshowId = $1 and userId = $2`;
+
+    const { rows } = await query(q, [serieID, userID]);
+
+    return rows[0];
+  },
+
+  serieAverageRating: async (serieID) => {
+    const q = 'select avg(rating), count(rating) from users_tvshows where tvshowid = $1';
+
+    const { rows } = await query(q, [serieID]);
+
+    return {
+      averagerating: rows[0].avg,
+      ratingcount: rows[0].count,
+    };
   },
 
   pageOfSeries: async (offset = 0, limit = 10) => {

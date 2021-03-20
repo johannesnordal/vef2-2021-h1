@@ -22,7 +22,8 @@ create table tvshows_genres
     tvshow integer not null,
     genre text not null,
     constraint tvshow foreign key (tvshow) references tvshows(id) on delete cascade,
-    constraint genre foreign key (genre) references genres(name) on delete cascade
+    constraint genre foreign key (genre) references genres(name) on delete cascade,
+    unique(tvshow, genre)
 );
 
 create table seasons
@@ -34,7 +35,8 @@ create table seasons
     overview text,
     image text not null, -- URL
     serieId integer not null,
-    constraint serieId foreign key (serieId) references tvshows(id) on delete cascade
+    constraint serieId foreign key (serieId) references tvshows(id) on delete cascade,
+    unique(serieID, "number")
 );
 
 create table episodes
@@ -46,7 +48,8 @@ create table episodes
     overview text,
     season integer not null,
     seasonId integer not null,
-    constraint season foreign key (season) references seasons(id) on delete cascade
+    constraint season foreign key (season) references seasons(id) on delete cascade,
+    unique(season, seasonId, "number")
 );
 
 create table users
