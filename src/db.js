@@ -357,7 +357,7 @@ export const remove = {
   },
 
   episode: async (episodeID) => {
-    const q = 'delete from seasons where id = $1 returning *';
+    const q = 'delete from episodes where id = $1 returning *';
 
     const { rows } = await query(q, [episodeID]);
 

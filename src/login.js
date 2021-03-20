@@ -56,7 +56,25 @@ export function requireAuthentication(req, res, next) {
 
       // Látum notanda vera aðgengilegan í rest af middlewares
       req.user = user;
-            
+
+      return next();
+    },
+  )(req, res, next);
+}
+
+export function maybeAuthentication(req, res, next) {
+  return passport.authenticate(
+    'jwt',
+    { session: false },
+    (err, user, info) => {
+      if (err) {
+        return next();
+      }
+      if (!user) {
+        next();
+      }
+      // Látum notanda vera aðgengilegan í rest af middlewares
+      req.user = user;
       return next();
     },
   )(req, res, next);

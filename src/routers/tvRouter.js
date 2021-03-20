@@ -12,7 +12,8 @@ import {
     isAdmin
 } from './../users.js'
 import {
-    requireAuthentication
+    requireAuthentication,
+    maybeAuthentication
 } from './../login.js';
 import { router as seasonRouter } from './seasonRouter.js'
 
@@ -86,27 +87,79 @@ export async function validationCheck(req, res, next) {
 
 /** LessGetit */
 router.get('/', catchErrors(get.series))
-router.get('/:id', catchErrors(get.singleSerie))
+
+router.get('/:id', 
+maybeAuthentication,
+catchErrors(get.singleSerie))
+
 router.get('/:id/season', catchErrors(get.seasons))
 router.get('/:id/season/:seasonID', catchErrors(get.singleSeason))
 router.get('/:id/season/:seasonID/episode/:episodeID', catchErrors(get.singleEpisode)) /**Óklárað */
 
-/** LessPostit */
-router.post('/', serieValidationMiddleware, validationCheck, post.serie)
-router.post('/:id/season', seasonValidationMiddleware, validationCheck, post.season)
-router.post('/:id/season/:seasonID/episode', episodeValidationMiddleware, validationCheck, post.episode)
+/************** LessPostit **********/
+router.post('/',
+    requireAuthentication,
+    //isAdmin,
+    serieValidationMiddleware,
+    validationCheck,
+    post.serie
+)
 
-/** PATCH'it up */
+router.post('/:id/season',
+    requireAuthentication,
+    //isAdmin,
+    seasonValidationMiddleware,
+    validationCheck,
+    post.season
+)
+router.post('/:id/season/:seasonID/episode',
+    requireAuthentication,
+    //isAdmin,
+    episodeValidationMiddleware,
+    validationCheck,
+    post.episode
+)
+
+/************ PATCH'it up */
 router.patch('/:id',
     requireAuthentication,
     //isAdmin,
     patch.serie)
 
 /**DELETe */
-router.delete('/:id',takeOut.serie)
-router.delete('/:id/season/:seasonID',takeOut.season)
-router.delete('/:id/season/:seasonID/episode/:episodeID',takeOut.episode)
+router.delete('/:id', takeOut.serie)
+router.delete('/:id/season/:seasonID', takeOut.season)
+router.delete('/:id/season/:seasonID/episode/:episodeID', takeOut.episode)
 
 
+/*** Rate og state */
+/**Post */
+router.post('/:id/rate',
+    requireAuthentication,
+    post.usersRate
+)
+router.post('/:id/state',
+    requireAuthentication,
+    post.userState
+)
 
-//router.use('/:id/season', seasonRouter);
+/**Patch */
+router.patch('/:id/rate',
+    requireAuthentication,
+    patch.usersRate
+)
+router.patch('/:id/state',
+    requireAuthentication,
+    patch.usersRate
+)
+
+
+/**Delete */
+router.delete('/:id/rate',
+    requireAuthentication,
+    takeOut.usersRate
+)
+router.delete('/:id/state',
+    requireAuthentication,
+    takeOut.usersState
+)

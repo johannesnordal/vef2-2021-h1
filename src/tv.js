@@ -1,4 +1,4 @@
-import { insert, select, update,remove } from './db.js'
+import { insert, select, update, remove } from './db.js'
 
 export const get = {
     series: async (req, res) => { /**Breyta og hafa offset */
@@ -10,8 +10,20 @@ export const get = {
 
     singleSerie: async (req, res) => {
         const { id } = req.params;
-        var serie = await getSerie(id)
+        const user = req.user;
+        const serie = await getSerie(id)
+
+        if (user) {
+
+            const stateRate = await select.userSerieStateAndRating(id, req.user.id);
+            const avgAndCount = await select.serieAverageRating(id)
+            serie.rating = stateRate.rating;
+            serie.averageRating = avgAndCount.averagerating;
+            serie.ratingcount = avgAndCount.ratingcount;
+            res.json(serie)
+        }
         res.json(serie)
+
     },
 
     seasons: async (req, res) => { /**Breyta og hafa offset */
@@ -23,21 +35,21 @@ export const get = {
 
     singleSeason: async (req, res) => {
         const { id, seasonID } = req.params;
-        const season = await getSeason(id,seasonID)
+        const season = await getSeason(id, seasonID)
         res.json(season)
     },
 
-    singleEpisode: async (req, res) => { 
+    singleEpisode: async (req, res) => {
         const { id, seasonID, episodeID } = req.params;
-        const season = await getSeason(id, seasonID); 
+        const season = await getSeason(id, seasonID);
 
         const episodes = season.episodes;
-        for(let ep of episodes) {
-            if(ep.number == episodeID) {
+        for (let ep of episodes) {
+            if (ep.number == episodeID) {
                 res.json(ep)
             }
         }
-        res.json({"error": "could not find episode"})
+        res.json({ "error": "could not find episode" })
     },
 }
 
@@ -73,7 +85,7 @@ export const post = {
         const dateFormat = /[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/;
         if (dateFormat.test(season.air_date) && season.air_date) {
             let date = season.air_date.split('-');
-            airdate = new Date(date[0], date[1], date[2]); 
+            airdate = new Date(date[0], date[1], date[2]);
         }
 
         console.log(airdate)
@@ -87,7 +99,7 @@ export const post = {
         }
 
         const result = await insert.season(newSeason)
-        
+
         res.json(result)
     },
     episode: async (req, res) => {
@@ -98,9 +110,9 @@ export const post = {
         const dateFormat = /[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/;
         if (dateFormat.test(episode.air_date) && episode.air_date) {
             let date = episode.air_date.split('-');
-            airdate = new Date(date[0], date[1], date[2]); 
+            airdate = new Date(date[0], date[1], date[2]);
         }
-        let season = getSeason(id,seasonID);
+        let season = getSeason(id, seasonID);
         const newEp = {
             "name": episode.name,
             "number": episode.number,
@@ -115,6 +127,37 @@ export const post = {
         res.json(result)
     },
 
+    usersRate: async (req, res) => {
+        const { id } = req.params;
+        const { rating } = req.body;
+        let user = req.user;
+        const data = {
+            "tvshowId": id,
+            "userId": user.id,
+            "rating": rating
+        }
+        const result = await insert.userSerie(data).catch(() => {
+            res.json({ "error": "Rating er nú þegar til" })
+        })
+        res.json(result)
+    },
+    userState: async (req, res) => {
+        const { id } = req.params;
+        const { state } = req.body;
+        let user = req.user;
+        const data = {
+            "tvshowId": id,
+            "userId": user.id,
+            "state": state
+        }
+        const result = await insert.userSerie(data)
+            .catch((err) => {
+                console.error(err)
+                res.json({ "error": "State er nú þegar til staðar" })
+            })
+        res.json(result)
+    }
+
 }
 export const patch = {
     serie: async (req, res) => {
@@ -124,40 +167,87 @@ export const patch = {
         const result = await update.serie(serie);
         res.json(result)
     },
-    season: async (req,res) => {
-        const { id , seasonID} = req.params;
-    }
+    season: async (req, res) => {
+        const { id, seasonID } = req.params;
+    },
+    usersRate: async (req, res) => {
+        const { id } = req.params;
+        const { rating, state } = req.body;
+        let user = req.user;
+
+        const data = {
+            "tvshowId": id,
+            "userId": user.id,
+            "rating": rating,
+            "state": state
+        }
+
+        let result = await update.userSerie(data)
+        if (!result) {
+            result = await insert.userSerie(data);
+        }
+        res.json(result)
+    },
+
 
 }
 export const takeOut = {
-    serie: async (req,res) => {
-        const {id} = req.params;
+    serie: async (req, res) => {
+        const { id } = req.params;
         const result = await remove.serie(id);
         res.json(result)
     },
 
-    season: async (req,res) =>{
-        const {id, seasonID} = req.params;
-        const result = await remove.season(id,seasonID);
+    season: async (req, res) => {
+        const { id, seasonID } = req.params;
+        const result = await remove.season(id, seasonID);
         res.json(result)
     },
-    episode: async (req,res) => {
-        const {id, seasonID,episodeID } = req.params;
+    episode: async (req, res) => {
+        const { id, seasonID, episodeID } = req.params;
         const season = await getSeason(id, seasonID);
         const episodes = season.episodes;
-        let epID= 0;
-        for(let ep of episodes) {
-            if(ep.number == episodeID) {
+        let epID = 0;
+        for (let ep of episodes) {
+            if (ep.number == episodeID) {
                 epID = ep.id;
             }
         }
         console.log(epID)
-        if(epID){
+        if (epID) {
             let results = await remove.episode(epID);
             res.json(results)
         }
-        res.json({"Error": "No such episode id"})
+        res.json({ "Error": "No such episode id" })
 
+    },
+    usersRate: async (req, res) => {
+        const { id } = req.params;
+        let user = req.user;
+        const data = {
+            "tvshowId": id,
+            "userId": user.id,
+            "rating": null
+        }
+        let result = await update.userSerie(data)
+        if (!result) {
+            res.json({ "error": "Rate er ekki til á þátt" })
+        }
+        res.json(result)
+    },
+    usersState: async (req, res) => {
+        const { id } = req.params;
+        let user = req.user;
+        const data = {
+            "tvshowId": id,
+            "userId": user.id,
+            "state": null
+        }
+        let result = await update.userSerie(data)
+        if (!result) {
+            res.json({ "error": "State er ekki til á þátt" })
+        }
+        res.json(result)
     }
 }
 
@@ -185,8 +275,6 @@ async function getSerie(serieID) {
     const serieGenres = await select.serieGenres(serieID)
     const serieSeasons = await select.serieSeasons(serieID);
 
-    /**Setja hérna inn avg rating og ratingcount */
-
     serie.genres = serieGenres;
     serie.seasons = serieSeasons;
     return serie
@@ -194,7 +282,7 @@ async function getSerie(serieID) {
 
 /**Skilar season hlut með episode hlut */
 async function getSeason(serieID, seasonNumber) {
-    
+
     const season = await select.serieSeason(serieID, seasonNumber)
     const episodesInSeason = await select.pageOfSeasonEpisodes(season.id)
     season.episodes = episodesInSeason
