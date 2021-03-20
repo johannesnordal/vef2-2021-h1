@@ -1,60 +1,65 @@
 import { insert, select, update, remove } from './db.js'
 
 export const get = {
-  series: async (req, res) => { /**Breyta og hafa offset */
-    let { offset = 0, limit = 10 } = req.query;
-    const series = await select.pageOfSeries(offset, limit);
+    series: async (req, res) => { 
+        let { offset = 0, limit = 10 } = req.query;
+        const series = await select.pageOfSeries(offset, limit);
 
-    res.json(series)
-  },
+        const data = await addOffsetLimit(req,series,limit,offset);
+        
+        res.json(data)
 
-  singleSerie: async (req, res) => {
-    const { id } = req.params;
-    const user = req.user;
-    const serie = await getSerie(id)
+    },
 
-    if (user) {
-      const stateRate = await select.userSerieStateAndRating(id, req.user.id);
-      const avgAndCount = await select.serieAverageRating(id)
+    singleSerie: async (req, res) => {
+        const { id } = req.params;
+        const user = req.user;
+        const serie = await getSerie(id)
+    
+        if (user) {
+          const stateRate = await select.userSerieStateAndRating(id, req.user.id);
+          const avgAndCount = await select.serieAverageRating(id)
+    
+          if (stateRate) {
+            serie.state = stateRate.state;
+            serie.rating = stateRate.rating;
+          }
+    
+          serie.averageRating = avgAndCount.averagerating;
+          serie.ratingcount = avgAndCount.ratingcount;
+          return res.json(serie)
+        }
+        return res.json(serie)
+    
+      },
 
-      if (stateRate) {
-        serie.state = stateRate.state;
-        serie.rating = stateRate.rating;
-      }
+    seasons: async (req, res) => { 
+        const { id } = req.params;
+        let { offset = 0, limit = 10 } = req.query;
 
-      serie.averageRating = avgAndCount.averagerating;
-      serie.ratingcount = avgAndCount.ratingcount;
-      return res.json(serie)
-    }
-    return res.json(serie)
+        const seasons = await select.pageOfSeries(id,offset, limit);
+        const data = await addOffsetLimit(req,seasons,limit,offset);
+        res.json(data);
+    },
 
-  },
+    singleSeason: async (req, res) => {
+        const { id, seasonID } = req.params;
+        const season = await getSeason(id, seasonID)
+        res.json(season)
+    },
 
-  seasons: async (req, res) => { /**Breyta og hafa offset */
-    const { id } = req.params;
+    singleEpisode: async (req, res) => {
+        const { id, seasonID, episodeID } = req.params;
+        const season = await getSeason(id, seasonID);
 
-    const seasons = await select.serieSeasons(id);
-    res.json(seasons);
-  },
-
-  singleSeason: async (req, res) => {
-    const { id, seasonID } = req.params;
-    const season = await getSeason(id, seasonID)
-    res.json(season)
-  },
-
-  singleEpisode: async (req, res) => {
-    const { id, seasonID, episodeID } = req.params;
-    const season = await getSeason(id, seasonID);
-
-    const episodes = season.episodes;
-    for (let ep of episodes) {
-      if (ep.number == episodeID) {
-        res.json(ep)
-      }
-    }
-    res.json({ "error": "could not find episode" })
-  },
+        const episodes = season.episodes;
+        for (let ep of episodes) {
+            if (ep.number == episodeID) {
+                res.json(ep)
+            }
+        }
+        res.json({ "error": "could not find episode" })
+    },
 }
 
 export const post = {
@@ -287,8 +292,36 @@ async function getSerie(serieID) {
 /**Skilar season hlut með episode hlut */
 async function getSeason(serieID, seasonNumber) {
 
-  const season = await select.serieSeason(serieID, seasonNumber)
-  const episodesInSeason = await select.pageOfSeasonEpisodes(season.id)
-  season.episodes = episodesInSeason
-  return season;
+    const season = await select.serieSeason(serieID, seasonNumber)
+    const episodesInSeason = await select.pageOfSeasonEpisodes(season.id)
+    season.episodes = episodesInSeason
+    return season;
+}
+
+async function addOffsetLimit(req,items,limit,offset) {
+    const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
+
+        const data = {
+            limit,
+            offset,
+            items: items,
+            _links: {
+              self: {
+                href: `${url}?offset=${offset}&limit=${limit}`,
+              },
+            },
+          };
+        
+          if (offset > 0) {
+            data._links.prev = {
+              href: `${url}?offset=${offset - limit}&limit=${limit}`,
+            };
+          }
+        
+          if (items.length !== 0) {
+            data._links.next = {
+              href: `${url}?offset=${offset + limit}&limit=${limit}`,
+            };
+          }
+          return data;
 }
