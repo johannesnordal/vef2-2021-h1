@@ -310,6 +310,16 @@ export const select = {
     return rows;
   },
 
+  pageOfSeasons: async (offset = 0, limit = 10) => {
+    const values = [ offset, limit ];
+
+    const q = 'select * from seasons order by id offset $1 limit $2';
+
+    const { rows } = await query(q, values);
+
+    return rows;
+  },
+
   pageOfSeasonEpisodes: async (seasonID, offset = 0, limit = 10) => {
     const q = 'select * from episodes where seasonId = $1 order by id offset $2 limit $3';
 
