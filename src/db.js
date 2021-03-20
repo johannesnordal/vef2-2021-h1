@@ -229,14 +229,6 @@ export const select = {
     return serie;
   },
 
-  series: async () => {
-    const q = 'select * from tvshows';
-
-    const { rows } = await query(q, []);
-
-    return rows;
-  },
-
   serieGenres: async (serieID) => {
     const q = 'select genre from tvshows_genres where tvshow = $1';
 
@@ -261,14 +253,6 @@ export const select = {
     return rows;
   },
 
-  seasonEpisodes: async (seasonID) => {
-    const q = 'select * from episodes where seasonId = $1';
-
-    const { rows } = await query(q, [seasonID]);
-
-    return rows;
-  },
-
   episode: async (episodeID) => {
     const q = 'select * from episodes where id = $1';
 
@@ -283,6 +267,24 @@ export const select = {
     const { rows } = await query(q, [userID]);
 
     return rows[0];
+  },
+
+  pageOfSeries: async (offset = 0, limit = 10) => {
+    const values = [ offset, limit ];
+
+    const q = 'select * from tvshows order by id offset $1 limit $2';
+
+    const { rows } = await query(q, values);
+
+    return rows;
+  },
+
+  pageOfSeasonEpisodes: async (seasonID, offset = 0, limit = 10) => {
+    const q = 'select * from episodes where seasonId = $1 order by id offset $2 limit $3';
+
+    const { rows } = await query(q, [seasonID, offset, limit]);
+
+    return rows;
   },
 
   pageOfGenres: async(offset = 0, limit = 10) => {
