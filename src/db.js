@@ -221,15 +221,6 @@ export const update = {
 }
 
 export const select = {
-  // Örugglega best að nota þetta ekki.
-  all: async (table) => {
-    const q = `select * from ${table}`;
-
-    const { rows } = await query(q);
-
-    return rows;
-  },
-
   serie: async (serieID) => {
     const q = 'select * from tvshows where id = $1';
 
@@ -270,6 +261,14 @@ export const select = {
     return rows;
   },
 
+  seasonEpisodes: async (seasonID) => {
+    const q = 'select * from episodes where seasonId = $1';
+
+    const { rows } = await query(q, [seasonID]);
+
+    return rows;
+  },
+
   episode: async (episodeID) => {
     const q = 'select * from episodes where id = $1';
 
@@ -306,14 +305,6 @@ export const select = {
     const { rows } = await query(q, values);
 
     return rows;
-  },
-
-  numberOfAdmins: async () => {
-    const q = 'select count(*) from users where admin = true';
-
-    const { rows: { 0: { count } } } = await query(q);
-
-    return Number(count);
   },
 }
 
