@@ -56,9 +56,11 @@ export const insert = {
   },
 
   genre: async (genre) => {
-    const q = `INSERT INTO genres (name) VALUES ($1)`;
+    const q = `INSERT INTO genres (name) VALUES ($1) RETURNING *`;
 
-    await query(q, [genre]);
+    const { rows } = await query(q, [genre]);
+
+    return rows[0];
   },
 
   season: async (seasonData) => {
@@ -323,9 +325,7 @@ export const select = {
 
     const { rows } = await query(q, values);
 
-    const genres = rows.map((genre) => genre.name);
-
-    return genres;
+    return rows;
   },
 
   pageOfUsers: async (offset = 0, limit = 10) => {
