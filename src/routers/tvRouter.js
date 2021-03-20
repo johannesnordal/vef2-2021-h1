@@ -104,8 +104,8 @@ router.patch('/:id',
 
 /**DELETe */
 router.delete('/:id',takeOut.serie)
-router.delete('/:id/season/:seasonID',takeOut.serie)
-router.delete('/:id/season/:seasonID/episode/:episodeID',takeOut.serie)
+router.delete('/:id/season/:seasonID',takeOut.season)
+router.delete('/:id/season/:seasonID/episode/:episodeID',takeOut.episode)
 
 
 

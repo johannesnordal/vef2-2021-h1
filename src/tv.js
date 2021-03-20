@@ -123,6 +123,9 @@ export const patch = {
         serie.id = id;
         const result = await update.serie(serie);
         res.json(result)
+    },
+    season: async (req,res) => {
+        const { id , seasonID} = req.params;
     }
 
 }
@@ -130,8 +133,31 @@ export const takeOut = {
     serie: async (req,res) => {
         const {id} = req.params;
         const result = await remove.serie(id);
-        console.log(result)
         res.json(result)
+    },
+
+    season: async (req,res) =>{
+        const {id, seasonID} = req.params;
+        const result = await remove.season(id,seasonID);
+        res.json(result)
+    },
+    episode: async (req,res) => {
+        const {id, seasonID,episodeID } = req.params;
+        const season = await getSeason(id, seasonID);
+        const episodes = season.episodes;
+        let epID= 0;
+        for(let ep of episodes) {
+            if(ep.number == episodeID) {
+                epID = ep.id;
+            }
+        }
+        console.log(epID)
+        if(epID){
+            let results = await remove.episode(epID);
+            res.json(results)
+        }
+        res.json({"Error": "No such episode id"})
+
     }
 }
 
@@ -170,7 +196,7 @@ async function getSerie(serieID) {
 async function getSeason(serieID, seasonNumber) {
     
     const season = await select.serieSeason(serieID, seasonNumber)
-    const episodesInSeason = await select.seasonEpisodes(season.id)
+    const episodesInSeason = await select.pageOfSeasonEpisodes(season.id)
     season.episodes = episodesInSeason
     return season;
 }
