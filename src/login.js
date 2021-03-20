@@ -71,7 +71,7 @@ export function maybeAuthentication(req, res, next) {
         return next();
       }
       if (!user) {
-        next();
+        return next();
       }
       // Látum notanda vera aðgengilegan í rest af middlewares
       req.user = user;

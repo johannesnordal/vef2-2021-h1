@@ -14,15 +14,15 @@ export const get = {
         const serie = await getSerie(id)
 
         if (user) {
-
             const stateRate = await select.userSerieStateAndRating(id, req.user.id);
             const avgAndCount = await select.serieAverageRating(id)
+            serie.state = stateRate.state;
             serie.rating = stateRate.rating;
             serie.averageRating = avgAndCount.averagerating;
             serie.ratingcount = avgAndCount.ratingcount;
-            res.json(serie)
+            return res.json(serie)
         }
-        res.json(serie)
+        return res.json(serie)
 
     },
 
