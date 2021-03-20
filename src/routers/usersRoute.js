@@ -5,7 +5,7 @@ import {
     getUsers,
     getSingleUser,
     patchUser,
-    paramCheck,
+    paramCheckUser,
     getMe,
     patchMeUp,
     isAdmin
@@ -25,8 +25,8 @@ export const router = express.Router();
 /**
  * Error handlers
  */
-export const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-export const validationMiddleware = [
+const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const validationMiddleware = [
     body('username')
         .isLength({ min: 1, max: 256 })
         .withMessage('username is required, max 256 characters'),
@@ -83,13 +83,13 @@ router.patch('/me',
 router.get('/:id',
     requireAuthentication,
     isAdmin,
-    paramCheck,
+    paramCheckUser,
     catchErrors(getSingleUser)
 );
 router.patch('/:id',
     requireAuthentication,
     isAdmin,
-    paramCheck,
+    paramCheckUser,
     catchErrors(patchUser)
 );
 router.get('/',

@@ -34,17 +34,9 @@ const xssSanitizationMiddleware = [
   body('email').customSanitizer((v) => xss(v)),
   body('password').customSanitizer((v) => xss(v)),
 ];
-app.use(xssSanitizationMiddleware)
+//app.use(xssSanitizationMiddleware)
 
-/**
- * POSTS
- */
-app.post('/tv/:id/season/:id/episode/:id', func);
-app.post('/tv/:id/season/:id/episode', func);
-app.post('/tv/:id/season/:id', func);
-app.post('/tv/:id/season', func);
-app.post('/tv/:id', func);
-app.post('/tv', func);
+
 
 app.post('/genres', func);
 

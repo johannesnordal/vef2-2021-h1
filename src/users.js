@@ -86,13 +86,9 @@ export async function isAdmin(req,res, next) {
 export async function getUsers(req, res) {
     let { offset = 0, limit = 10 } = req.query;
     const q = 'SELECT * FROM users';
-    let users;
     const usersLength = await countUsers();
-    if (typeof offset !== 'undefined' && typeof limit !== 'undefined') {
-        users = await listOfUsers(parseInt(offset), parseInt(limit));
-    } else {
-        users = await listOfUsers(parseInt(0), parseInt(10));
-    }
+   
+    let users = await listOfUsers(parseInt(offset), parseInt(limit));
     const newUsers = takeOutPassword(users);
 
     offset = parseInt(offset);
@@ -194,7 +190,7 @@ export async function patchUser(req, res) {
     res.json(takeOutPassword(user))
 }
 
-export async function paramCheck(req, res, next) {
+export async function paramCheckUser(req, res, next) {
     const { id } = req.params;
 
     const user = await findById(id)
