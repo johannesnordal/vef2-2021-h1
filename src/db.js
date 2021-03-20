@@ -221,6 +221,7 @@ export const update = {
 }
 
 export const select = {
+  // Örugglega best að nota þetta ekki.
   all: async (table) => {
     const q = `select * from ${table}`;
 
@@ -235,6 +236,14 @@ export const select = {
     const { rows: [ serie ]  } = await query(q, [serieID]);
 
     return serie;
+  },
+
+  series: async () => {
+    const q = 'select * from tvshows';
+
+    const { rows } = await query(q, []);
+
+    return rows;
   },
 
   serieGenres: async (serieID) => {
