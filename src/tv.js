@@ -1,11 +1,14 @@
 import { insert, select, update, remove } from './db.js'
 
 export const get = {
-    series: async (req, res) => { /**Breyta og hafa offset */
+    series: async (req, res) => { 
         let { offset = 0, limit = 10 } = req.query;
         const series = await select.pageOfSeries(offset, limit);
 
-        res.json(series)
+        const data = await addOffsetLimit(req,series,limit,offset);
+        
+        res.json(data)
+
     },
 
     singleSerie: async (req, res) => {
@@ -15,7 +18,8 @@ export const get = {
 
         if (user) {
             const stateRate = await select.userSerieStateAndRating(id, req.user.id);
-            const avgAndCount = await select.serieAverageRating(id)
+            const avgAndCount = await select.serieAverageRating(id);
+            
             serie.state = stateRate.state;
             serie.rating = stateRate.rating;
             serie.averageRating = avgAndCount.averagerating;
@@ -26,11 +30,13 @@ export const get = {
 
     },
 
-    seasons: async (req, res) => { /**Breyta og hafa offset */
+    seasons: async (req, res) => { 
         const { id } = req.params;
+        let { offset = 0, limit = 10 } = req.query;
 
-        const seasons = await select.serieSeasons(id);
-        res.json(seasons);
+        const seasons = await select.pageOfSeries(id,offset, limit);
+        const data = await addOffsetLimit(req,seasons,limit,offset);
+        res.json(data);
     },
 
     singleSeason: async (req, res) => {
@@ -287,4 +293,32 @@ async function getSeason(serieID, seasonNumber) {
     const episodesInSeason = await select.pageOfSeasonEpisodes(season.id)
     season.episodes = episodesInSeason
     return season;
+}
+
+async function addOffsetLimit(req,items,limit,offset) {
+    const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
+
+        const data = {
+            limit,
+            offset,
+            items: items,
+            _links: {
+              self: {
+                href: `${url}?offset=${offset}&limit=${limit}`,
+              },
+            },
+          };
+        
+          if (offset > 0) {
+            data._links.prev = {
+              href: `${url}?offset=${offset - limit}&limit=${limit}`,
+            };
+          }
+        
+          if (items.length !== 0) {
+            data._links.next = {
+              href: `${url}?offset=${offset + limit}&limit=${limit}`,
+            };
+          }
+          return data;
 }
