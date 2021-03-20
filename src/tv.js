@@ -37,7 +37,7 @@ export const get = {
         const { id } = req.params;
         let { offset = 0, limit = 10 } = req.query;
 
-        const seasons = await select.pageOfSeries(id,offset, limit);
+        const seasons = await select.pageOfSeasons(id,offset, limit);
         const data = await addOffsetLimit(req,seasons,limit,offset);
         res.json(data);
     },
@@ -179,6 +179,7 @@ export const patch = {
   season: async (req, res) => {
     const { id, seasonID } = req.params;
   },
+
   usersRate: async (req, res) => {
     const { id } = req.params;
     const { rating, state } = req.body;

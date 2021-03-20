@@ -126,6 +126,8 @@ router.patch('/:id',
     //isAdmin,
     patch.serie)
 
+
+
 /**DELETe */
 router.delete('/:id', takeOut.serie)
 router.delete('/:id/season/:seasonID', takeOut.season)
