@@ -1,3 +1,4 @@
+import { uploadImage } from './image-data.js';
 import {
   insert, select, update, remove,
 } from './db.js';
@@ -70,11 +71,13 @@ export const post = {
 
     const airdate = new Date(date[0], date[1], date[2]);
 
+    const imageURL = await uploadImage(serie.image, false);
+
     const newSerie = {
       name: serie.name,
       airdate,
       inproduction: serie.in_production,
-      image: serie.image,
+      image: imageURL,
       description: serie.description,
       language: serie.language,
       tagline: serie.tagline,
@@ -96,13 +99,15 @@ export const post = {
       airdate = new Date(date[0], date[1], date[2]);
     }
 
+    const imageURL = await uploadImage(season.image, false);
+
     console.log(airdate);
     const newSeason = {
       name: season.name,
       number: season.number,
       airdate,
       overview: season.overview,
-      image: season.image,
+      image: imageURL,
       serieId: id,
     };
 
