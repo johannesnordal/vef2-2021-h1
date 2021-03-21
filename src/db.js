@@ -5,8 +5,6 @@ import { readFileAsync } from './utils.js';
 
 dotenv.config();
 
-// const connectionString = process.env.DATABASE_URL;
-
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
