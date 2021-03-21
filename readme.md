@@ -18,23 +18,22 @@ gengið á Heroku. Þarf að leiðandi þarf að nota eftirfarandi
 umhverfisbreytur í `.env`:
 
 ```
-
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-
 ```
 
 Þær má finna á Dashboard á Cloudinary eins og fram kemur
 [hér](https://cloudinary.com/documentation/node_integration#configuration).
-
+Við notuðum nöfnin á myndunum í `data/img` með endingu (`.jpg`) fyrir `public_id`
+þ.a. ef sá aðili sem fer yfir verkefnið er nú þegar með myndinarnar inni á
+Cloudinary og notar sama fyrirkomalag þá ætti `npm setup ekki að taka
+langan tíma. En ef sú er ekki raunin gæti það tekið nokkrar mínútur :(
 
 ```
-
 npm install
 npm run setup
 npm start
-
 ```
 
 ## Dæmi um köll á vefþjónustu
