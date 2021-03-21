@@ -23,7 +23,9 @@ export const resourcesByIdAsync = util.promisify(cloudinary.api.resources_by_ids
 
 let images = null;
 
-export async function uploadImage(imagePath) {
+export async function uploadImage(imagePath, use_filename = true) {
+  console.log(imagePath);
+
   const name = path.basename(imagePath);
   const pathname = path.normalize(imagePath);
 
@@ -43,7 +45,8 @@ export async function uploadImage(imagePath) {
     {
       unique_filename: false,
       overwrite: false,
-      public_id: name,
+      // public_id: name,
+      use_filename,
       allowed_formats: 'jpg,png,gif',
     });
 
