@@ -3,7 +3,8 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
-import { comparePasswords, findByUsername, findById } from './users.js';
+import { comparePasswords, findByUsername } from './users.js';
+import { select } from './db.js';
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ const jwtOptions = {
 
 async function strat(data, next) {
   // fáum id gegnum data sem geymt er í token
-  const user = await findById(data.id);
+  const user = await select.user(data.id);
   if (user) {
     next(null, user);
   } else {
@@ -62,6 +63,10 @@ export function requireAuthentication(req, res, next) {
   )(req, res, next);
 }
 
+/**
+ * Setur user í req.user ef notandi er loggaður inn,
+ * annars ekki.
+ */
 export function maybeAuthentication(req, res, next) {
   return passport.authenticate(
     'jwt',
