@@ -116,6 +116,11 @@ async function setup() {
   const users = await csvData.parseUsers();
   await insertUsers(users);
 
+  await db.update.user({
+    id: 1,
+    admin: true,
+  });
+
   const series = await csvData.parseSeries();
   const seriesIDs = await insertSeries(series);
 
