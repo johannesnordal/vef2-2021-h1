@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/app.js",
     "setup": "node src/setup.js",
+    "start": "node ./src/app.js",
     "test": "eslint ./src/*.js ./src/routers/*.js --fix"
   },
   "repository": {
