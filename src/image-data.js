@@ -21,11 +21,25 @@ export const uploadAsync = util.promisify(cloudinary.uploader.upload);
 export const resourcesAsync = util.promisify(cloudinary.api.resources);
 export const resourcesByIdAsync = util.promisify(cloudinary.api.resources_by_ids);
 
+let images = null;
+
 export async function uploadImage(imagePath) {
   const name = path.basename(imagePath);
   const pathname = path.normalize(imagePath);
 
-  const { url } = await uploadAsync(pathname,
+  if (!images) {
+    const res  = await resourcesAsync({ max_results: 500 });
+
+    images = res.resources
+  }
+
+  for (const image of images) {
+    if (image.public_id === name) {
+      return image.secure_url;
+    }
+  }
+
+  const { secure_url } = await uploadAsync(pathname,
     {
       unique_filename: false,
       overwrite: false,
@@ -33,11 +47,7 @@ export async function uploadImage(imagePath) {
       allowed_formats: 'jpg,png,gif',
     });
 
-  return url;
-}
-
-export async function findImage(imagePath) {
-  const name = path.basename(imagePath);
+  return secure_url;
 }
 
 export default {

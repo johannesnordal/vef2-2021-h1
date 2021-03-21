@@ -100,7 +100,6 @@ async function insertSeriesGenres(series, seriesIDs) {
 async function insertUsers(users) {
   for (const user of users) {
     const res = await db.insert.user(user);
-    console.log(res);
   }
 }
 

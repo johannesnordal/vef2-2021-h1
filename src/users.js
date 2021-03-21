@@ -3,143 +3,145 @@ import { query, update } from './db.js'
 
 
 export async function comparePasswords(password, hash) {
-    const result = await bcrypt.compare(password, hash);
+  const result = await bcrypt.compare(password, hash);
 
-    return result;
+  return result;
 }
 
 
 export async function findByUsername(username) {
-    const q = 'SELECT * FROM users WHERE username = $1';
+  const q = 'SELECT * FROM users WHERE username = $1';
 
-    try {
-        const result = await query(q, [username]);
+  try {
+    const result = await query(q, [username]);
 
-        if (result.rowCount === 1) {
-            return result.rows[0];
-        }
-    } catch (e) {
-        console.error('Gat ekki fundið notanda eftir notendnafni');
-        return null;
+    if (result.rowCount === 1) {
+      return result.rows[0];
     }
+  } catch (e) {
+    console.error('Gat ekki fundið notanda eftir notendnafni');
+    return null;
+  }
 
-    return false;
+  return false;
 }
 
 export async function findByEmail(email) {
-    const q = 'SELECT * FROM users WHERE email = $1';
+  const q = 'SELECT * FROM users WHERE email = $1';
 
-    try {
-        const result = await query(q, [email]);
+  try {
+    const result = await query(q, [email]);
 
-        if (result.rowCount === 1) {
-            return result.rows[0];
-        }
-    } catch (e) {
-        console.error("Gat ekki fundið notanda eftir email'i");
-        return null;
+    if (result.rowCount === 1) {
+      return result.rows[0];
     }
+  } catch (e) {
+    console.error("Gat ekki fundið notanda eftir email'i");
+    return null;
+  }
 
-    return false;
+  return false;
 }
 
 export async function findById(id) {
-    const q = 'SELECT * FROM users WHERE id = $1';
+  const q = 'SELECT * FROM users WHERE id = $1';
 
-    try {
-        const result = await query(q, [id]);
+  try {
+    const result = await query(q, [id]);
 
-        if (result.rowCount === 1) {
-            return result.rows[0];
-        }
-    } catch (e) {
-        console.error('Gat ekki fundið notanda eftir id');
+    if (result.rowCount === 1) {
+      return result.rows[0];
     }
+  } catch (e) {
+    console.error('Gat ekki fundið notanda eftir id');
+  }
 
-    return null;
+  return null;
 }
 
 async function countUsers() {
-    const q = 'SELECT COUNT(*) FROM users';
+  const q = 'SELECT COUNT(*) FROM users';
 
-    try {
-        const result = await query(q);
+  try {
+    const result = await query(q);
 
-        if (result.rowCount === 1) {
-            return parseInt(result.rows[0].count);
-        }
-    } catch (e) {
-        console.error('Gat ekki fundið lengd');
+    if (result.rowCount === 1) {
+      return parseInt(result.rows[0].count);
     }
-
-    return null;
-}
-
-export async function isAdmin(req,res, next) {
-    const { admin } = req.user;
-    if (admin) {
-      return next();
-    }
-    return res.json({"error": "insufficient authorization"})
+  } catch (e) {
+    console.error('Gat ekki fundið lengd');
   }
 
+  return null;
+}
+
+export async function isAdmin(req, res, next) {
+  const { admin } = req.user;
+
+  if (admin) {
+    return next();
+  }
+
+  return res.json({"error": "insufficient authorization"})
+}
+
 export async function getUsers(req, res) {
-    let { offset = 0, limit = 10 } = req.query;
-    const q = 'SELECT * FROM users';
-    const usersLength = await countUsers();
-   
-    let users = await listOfUsers(parseInt(offset), parseInt(limit));
-    const newUsers = takeOutPassword(users);
+  let { offset = 0, limit = 10 } = req.query;
+  const q = 'SELECT * FROM users';
+  const usersLength = await countUsers();
 
-    offset = parseInt(offset);
-    limit = parseInt(limit)
+  let users = await listOfUsers(parseInt(offset), parseInt(limit));
+  const newUsers = takeOutPassword(users);
 
-    let next = {};
-    let prev = {};
-    const self = { "href": `localhost:3000/users?offset=${offset}&limit=${limit}` }
-    if (usersLength > offset + limit) {
-        next = { "href": `localhost:3000/users?offset=${offset + limit}&limit=${limit}` }
+  offset = parseInt(offset);
+  limit = parseInt(limit)
+
+  let next = {};
+  let prev = {};
+  const self = { "href": `localhost:3000/users?offset=${offset}&limit=${limit}` }
+  if (usersLength > offset + limit) {
+    next = { "href": `localhost:3000/users?offset=${offset + limit}&limit=${limit}` }
+  }
+  if (offset > 0 && offset < limit) {
+    prev = { "href": `localhost:3000/users?offset=${0}&limit=${limit}` }
+  } else if (offset > 0) {
+    prev = { "href": `localhost:3000/users?offset=${offset - limit}&limit=${limit}` }
+  }
+
+  let obj = {
+    "limit": limit,
+    "offset": offset,
+    "items": newUsers,
+    "_links": {
+      "self": self,
+      "prev": prev,
+      "next": next
     }
-    if (offset > 0 && offset < limit) {
-        prev = { "href": `localhost:3000/users?offset=${0}&limit=${limit}` }
-    } else if (offset > 0) {
-        prev = { "href": `localhost:3000/users?offset=${offset - limit}&limit=${limit}` }
-    }
 
-    let obj = {
-        "limit": limit,
-        "offset": offset,
-        "items": newUsers,
-        "_links": {
-            "self": self,
-            "prev": prev,
-            "next": next
-        }
-
-    }
-    return res.json(obj);
+  }
+  return res.json(obj);
 }
 
 /**
  * Listi af x mörgum users úr users töflunni
  */
 export async function listOfUsers(offset = 0, limit = 10) {
-    const values = [offset, limit];
-    let result = [];
+  const values = [offset, limit];
+  let result = [];
 
-    try {
-        const q = `SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2`;
+  try {
+    const q = `SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2`;
 
-        const queryResult = await query(q, values);
+    const queryResult = await query(q, values);
 
-        if (queryResult && queryResult.rows) {
-            result = queryResult.rows;
+    if (queryResult && queryResult.rows) {
+      result = queryResult.rows;
 
-        }
-    } catch (e) {
-        console.error('Error finding users', e);
     }
-    return result;
+  } catch (e) {
+    console.error('Error finding users', e);
+  }
+  return result;
 }
 
 /**
@@ -147,74 +149,90 @@ export async function listOfUsers(offset = 0, limit = 10) {
  * Skila fylki af user objects mínus password
  */
 function takeOutPassword(users) {
-    let newUsers = [];
+  let newUsers = [];
 
-    for (let user of users) {
+  for (let user of users) {
 
-        let obj = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "admin": user.admin,
-            "created": user.created,
-            "updated": user.updated
-        }
-        newUsers.push(obj);
+    let obj = {
+      "id": user.id,
+      "username": user.username,
+      "email": user.email,
+      "admin": user.admin,
+      "created": user.created,
+      "updated": user.updated
     }
-    return newUsers;
+    newUsers.push(obj);
+  }
+  return newUsers;
 }
 
 
 export async function getSingleUser(req, res) {
-    const { id } = req.params;
-    const user = await findById(id);
-    const result = takeOutPassword([user])
-    return res.json(result[0])
+  const { id } = req.params;
+  const user = await findById(id);
+  const result = takeOutPassword([user])
+
+  return res.json(result[0])
 }
 
 export async function patchUser(req, res) {
-    const { admin } = req.body;
-    const { id } = req.params;
-    let user;
-    if (admin === false || admin === "false") {
-        user = await update.user({
-            "id": id, 
-            "admin":false
-        })
-        res.json(takeOutPassword(user))
-    }
-    user = await update.user({
-        "id": id,
-        "admin": true
-    })
-    res.json(takeOutPassword(user))
+  const adminID = req.user.id;
+  const userID = Number(req.params.id);
+  
+  if (adminID === userID) {
+    return res.json({
+      error: 'Can\'t change self from admin to user',
+    });
+  }
+
+  const { admin } = req.body;
+
+  if (!admin) {
+    return res.json();
+  }
+
+  const user = await update.user({
+    id: userID,
+    admin,
+  });
+
+  return res.json(takeOutPassword(user));
 }
 
 export async function paramCheckUser(req, res, next) {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const user = await findById(id)
+  const user = await findById(id)
 
-    if (!id || !user) {
-        return res.json({ "error": "No such id" })
-    }
-    next()
+  if (!id || !user) {
+    return res.json({ "error": "No such id" })
+  }
+  
+  return next()
 }
 
 export async function getMe(req, res) {
-    const { user } = req;
-    let ret = takeOutPassword([user])
-    res.json(ret)
+  const { user } = req;
+  let ret = takeOutPassword([user])
+  res.json(ret)
 }
 
 export async function patchMeUp(req, res) {
-    const { user } = req;
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    console.log(user)
-    /** Laga þegar update.user er virkt */
-    update.user({
-        "email": email,
-        "password": password
-    });
+  const data = {
+    id: req.user.id,
+  };
+
+  if (email) {
+    data.email = email;
+  }
+
+  if (password) {
+    data.password = password;
+  }
+
+  const userUpdate = await update.user(data);
+
+  return res.json(userUpdate);
 }
