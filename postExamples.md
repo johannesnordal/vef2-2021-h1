@@ -65,3 +65,14 @@ PATCH á /user/:id
 {
     "admin":true
 }
+
+## Tilbúnir notendur
+### Admin
+Username: admin
+Email: admin@admin
+Password: adminadmin
+
+### Venjulegur user
+Username: user
+Email: user@user
+Password: 1234567890
