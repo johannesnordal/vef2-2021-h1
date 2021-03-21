@@ -28,7 +28,7 @@ CLOUDINARY_API_SECRET=
 Við notuðum nöfnin á myndunum í `data/img` með endingu (`.jpg`) fyrir `public_id`
 þannig ef sá aðili sem fer yfir verkefnið er nú þegar með myndinarnar inni á
 Cloudinary og notar sama fyrirkomalag þá ætti `npm setup` ekki að taka
-langan tíma. En ef sú er ekki raunin gæti það tekið nokkrar mínútur :(
+langan tíma. En ef sú er ekki raunin gæti það tekið nokkrar mínútur :cry:
 
 ```
 npm install
