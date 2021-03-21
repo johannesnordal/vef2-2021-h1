@@ -103,6 +103,12 @@ async function insertUsers(users) {
   }
 }
 
+async function insertUsersSeries(usersSeries) {
+  for (const userSerie of usersSeries) {
+    await db.insert.userSerie(userSerie);
+  }
+}
+
 async function setup() {
   await db.clear();
   await db.load();
@@ -123,6 +129,9 @@ async function setup() {
   await insertEpisodes(episodes, seriesIDs);
 
   await insertSeriesGenres(series, seriesIDs);
+
+  const usersSeries = await csvData.parseUsersSeries();
+  await insertUsersSeries(usersSeries);
 }
 
 await setup();
