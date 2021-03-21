@@ -1,10 +1,33 @@
 # Hópverkefni 1
 
-### Magnús Þór (mtv3@hi.is)
+Í hópunum eru 
 
-### Jóhannes Nordal (jon8@hi.is)
++ Magnús Þór (mtv3@hi.is)
 
-### Uppsetning á verkefni
++ Jóhannes Nordal (jon8@hi.is).
+
+## Uppsetning á verkefni
+
+1. Búa til gagnagrunn, t.d. `createdb vef2-2021-h1`
+2. Búa til Cloudinary aðgang
+
+### Nokkur orð um Cloudinary
+
+Okkur tókst ekki að nota `CLOUDINARY_URL` locally þó að það hafi
+gengið á Heroku. Þarf að leiðandi þarf að nota eftirfarandi 
+umhverfisbreytur í `.env`:
+
+```
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+```
+
+Þær má finna á Dashboard á Cloudinary eins og fram kemur
+[hér](https://cloudinary.com/documentation/node_integration#configuration).
+
 
 ```
 
