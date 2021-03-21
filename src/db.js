@@ -50,13 +50,13 @@ export const insert = {
 
     const q = `INSERT INTO tvshows (${keys}) VALUES (${paramString}) RETURNING *`;
 
-    const { rows: [ res ] } = await query(q, values);
+    const { rows: [res] } = await query(q, values);
 
     return res.id;
   },
 
   genre: async (genre) => {
-    const q = `INSERT INTO genres (name) VALUES ($1) RETURNING *`;
+    const q = 'INSERT INTO genres (name) VALUES ($1) RETURNING *';
 
     const { rows } = await query(q, [genre]);
 
@@ -93,7 +93,7 @@ export const insert = {
   },
 
   serieGenre: async (serieID, genre) => {
-    const q = `insert into tvshows_genres (tvshow, genre) values($1, $2)`;
+    const q = 'insert into tvshows_genres (tvshow, genre) values($1, $2)';
 
     await query(q, [serieID, genre]);
   },
@@ -108,9 +108,9 @@ export const insert = {
 
     const paramString = toParamString(values.length);
     const q = `INSERT INTO users (${keys}) VALUES (${paramString}) RETURNING *`;
-   
+
     try {
-      const { rows: [ res ] } = await query(q, values);
+      const { rows: [res] } = await query(q, values);
       return res;
     } catch (e) {
       console.error(e);
@@ -141,8 +141,8 @@ export const insert = {
     const { rows } = await query(q, values);
 
     return rows[0];
-  }
-}
+  },
+};
 
 export const update = {
   toParamString: (params) => {
@@ -157,9 +157,7 @@ export const update = {
     const offset = whereKeys.length + 1;
     const setParams = setKeys.map((value, index) => `${value} = $${index + offset}`);
 
-    const whereParams = whereKeys.map((value, index) => {
-      return `${value} = $${index + 1}`
-    }).toString().replace(',', ' and ');
+    const whereParams = whereKeys.map((value, index) => `${value} = $${index + 1}`).toString().replace(',', ' and ');
 
     const values = whereValues.concat(setValues);
 
@@ -227,13 +225,13 @@ export const update = {
 
     return rows[0];
   },
-}
+};
 
 export const select = {
   serie: async (serieID) => {
     const q = 'select * from tvshows where id = $1';
 
-    const { rows: [ serie ]  } = await query(q, [serieID]);
+    const { rows: [serie] } = await query(q, [serieID]);
 
     return serie;
   },
@@ -243,13 +241,13 @@ export const select = {
 
     const { rows: genres } = await query(q, [serieID]);
 
-    return genres
+    return genres;
   },
 
   serieSeason: async (serieID, number) => {
     const q = 'select * from seasons where serieid = $1 and number = $2';
 
-    const { rows: [ res ] } = await query(q, [serieID, number]);
+    const { rows: [res] } = await query(q, [serieID, number]);
 
     return res;
   },
@@ -301,7 +299,7 @@ export const select = {
   },
 
   pageOfSeries: async (offset = 0, limit = 10) => {
-    const values = [ offset, limit ];
+    const values = [offset, limit];
 
     const q = 'select * from tvshows order by id offset $1 limit $2';
 
@@ -310,8 +308,8 @@ export const select = {
     return rows;
   },
 
-  pageOfSeasons: async (seriesId ,offset = 0, limit = 10) => {
-    const values = [ seriesId, offset, limit ];
+  pageOfSeasons: async (seriesId, offset = 0, limit = 10) => {
+    const values = [seriesId, offset, limit];
 
     const q = 'select * from seasons where serieId = $1 order by id offset $2 limit $3';
 
@@ -328,8 +326,8 @@ export const select = {
     return rows;
   },
 
-  pageOfGenres: async(offset = 0, limit = 10) => {
-    const values = [ offset, limit ];
+  pageOfGenres: async (offset = 0, limit = 10) => {
+    const values = [offset, limit];
 
     const q = 'select * from genres order by name offset $1 limit $2';
 
@@ -339,7 +337,7 @@ export const select = {
   },
 
   pageOfUsers: async (offset = 0, limit = 10) => {
-    const values = [ offset, limit ];
+    const values = [offset, limit];
 
     const q = 'select * from users order by id offset $1 limit $2';
 
@@ -347,7 +345,7 @@ export const select = {
 
     return rows;
   },
-}
+};
 
 export const remove = {
   serie: async (serieID) => {
@@ -373,7 +371,7 @@ export const remove = {
 
     return rows[0];
   },
-}
+};
 
 export default {
   load,
@@ -383,4 +381,4 @@ export default {
   select,
   update,
   remove,
-}
+};

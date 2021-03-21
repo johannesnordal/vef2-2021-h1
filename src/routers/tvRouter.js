@@ -5,14 +5,14 @@ import {
   get,
   post,
   patch,
-  takeOut
-} from './../tv.js'
+  takeOut,
+} from '../tv.js';
 import {
   requireAuthentication,
-  maybeAuthentication
-} from './../login.js';
-import { catchErrors } from './../utils.js'
-import { isAdmin } from './../users.js'
+  maybeAuthentication,
+} from '../login.js';
+import { catchErrors } from '../utils.js';
+import { isAdmin } from '../users.js';
 
 export const router = express.Router();
 
@@ -82,88 +82,74 @@ export async function validationCheck(req, res, next) {
   return next();
 }
 
-/****** GET ROUTERS ******/
-router.get('/', catchErrors(get.series))
+/** **** GET ROUTERS ***** */
+router.get('/', catchErrors(get.series));
 router.get('/:id',
   maybeAuthentication, // Tékkar hvort notandi er loggaður inn
-  catchErrors(get.singleSerie)
-)
-router.get('/:id/season', catchErrors(get.seasons))
-router.get('/:id/season/:seasonID', catchErrors(get.singleSeason))
-router.get('/:id/season/:seasonID/episode/:episodeID', catchErrors(get.singleEpisode)) /**Óklárað */
+  catchErrors(get.singleSerie));
+router.get('/:id/season', catchErrors(get.seasons));
+router.get('/:id/season/:seasonID', catchErrors(get.singleSeason));
+router.get('/:id/season/:seasonID/episode/:episodeID', catchErrors(get.singleEpisode)); /** Óklárað */
 
-/************** POST ROUTERS **********/
+/** ************ POST ROUTERS ********* */
 router.post('/',
   requireAuthentication,
   isAdmin,
   serieValidationMiddleware,
   validationCheck,
-  catchErrors(post.serie)
-)
+  catchErrors(post.serie));
 
 router.post('/:id/season',
   requireAuthentication,
   isAdmin,
   seasonValidationMiddleware,
   validationCheck,
-  catchErrors(post.season)
-)
+  catchErrors(post.season));
 router.post('/:id/season/:seasonID/episode',
   requireAuthentication,
   isAdmin,
   episodeValidationMiddleware,
   validationCheck,
-  catchErrors(post.episode)
-)
+  catchErrors(post.episode));
 
-/************ PATCH ROUTERS */
+/** ********** PATCH ROUTERS */
 router.patch('/:id',
   requireAuthentication,
   isAdmin,
-  catchErrors(patch.serie)
-)
+  catchErrors(patch.serie));
 
-/************ DELETE ROUTERS */
+/** ********** DELETE ROUTERS */
 router.delete('/:id',
   isAdmin,
-  catchErrors(takeOut.serie)
-)
+  catchErrors(takeOut.serie));
 router.delete('/:id/season/:seasonID',
   isAdmin,
-  catchErrors(takeOut.season)
-)
+  catchErrors(takeOut.season));
 router.delete('/:id/season/:seasonID/episode/:episodeID',
   isAdmin,
-  catchErrors(takeOut.episode)
-)
+  catchErrors(takeOut.episode));
 
-/*** Rate og state */
-/****** POST *******/
+/** * Rate og state */
+/** **** POST ****** */
 router.post('/:id/rate',
   requireAuthentication,
-  catchErrors(post.usersRate)
-)
+  catchErrors(post.usersRate));
 router.post('/:id/state',
   requireAuthentication,
-  catchErrors(post.userState)
-)
+  catchErrors(post.userState));
 
-/**Patch */
+/** Patch */
 router.patch('/:id/rate',
   requireAuthentication,
-  catchErrors(patch.usersRate)
-)
+  catchErrors(patch.usersRate));
 router.patch('/:id/state',
   requireAuthentication,
-  catchErrors(patch.usersRate)
-)
+  catchErrors(patch.usersRate));
 
-/**Delete */
+/** Delete */
 router.delete('/:id/rate',
   requireAuthentication,
-  catchErrors(takeOut.usersRate)
-)
+  catchErrors(takeOut.usersRate));
 router.delete('/:id/state',
   requireAuthentication,
-  catchErrors(takeOut.usersState)
-)
+  catchErrors(takeOut.usersState));

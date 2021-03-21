@@ -1,13 +1,13 @@
 import express from 'express';
 
-import { requireAuthentication } from './../login.js';
-import { catchErrors } from './../utils.js';
-import { select, insert } from './../db.js';
+import { requireAuthentication } from '../login.js';
+import { catchErrors } from '../utils.js';
+import { select, insert } from '../db.js';
 
 export const router = express.Router();
 
 async function getGenres(req, res) {
-  let { offset = 0, limit = 10 } = req.query;
+  const { offset = 0, limit = 10 } = req.query;
 
   const genres = await select.pageOfGenres(offset, limit);
 

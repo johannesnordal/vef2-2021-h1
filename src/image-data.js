@@ -39,9 +39,9 @@ export async function uploadImage(imagePath, use_filename = true) {
   }
 
   const conf = {
-      unique_filename: false,
-      overwrite: false,
-      allowed_formats: 'jpg,png,gif',
+    unique_filename: false,
+    overwrite: false,
+    allowed_formats: 'jpg,png,gif',
   };
 
   if (use_filename) {

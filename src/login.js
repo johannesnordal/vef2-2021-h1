@@ -9,7 +9,7 @@ dotenv.config();
 
 const {
   JWT_SECRET: jwtSecret,
-  TOKEN_LIFETIME: tokenLifetime = 6000, //600 sek
+  TOKEN_LIFETIME: tokenLifetime = 6000, // 600 sek
   DATABASE_URL: databaseUrl,
 } = process.env;
 
@@ -98,7 +98,7 @@ export async function login(req, res) {
     const payload = { id: user.id };
     const tokenOptions = { expiresIn: tokenLifetime };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
-    user.token = token
+    user.token = token;
     return res.json(user);
   }
 

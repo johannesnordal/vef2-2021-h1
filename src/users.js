@@ -86,13 +86,13 @@ export async function isAdmin(req, res, next) {
 }
 
 export async function getUsers(req, res) {
-  let { offset = 0, limit = 10 } = req.query;
+  const { offset = 0, limit = 10 } = req.query;
 
-  const users = await select.pageOfUsers(parseInt(offset),parseInt(limit))
+  const users = await select.pageOfUsers(parseInt(offset), parseInt(limit));
   const newUsers = takeOutPassword(users);
 
-  const result = await addOffsetLimit(req,newUsers,limit,offset);
- 
+  const result = await addOffsetLimit(req, newUsers, limit, offset);
+
   return res.json(result);
 }
 
@@ -186,7 +186,6 @@ export async function patchMeUp(req, res) {
 
   return res.json(userUpdate);
 }
-
 
 async function addOffsetLimit(req, items, limit, offset) {
   const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
