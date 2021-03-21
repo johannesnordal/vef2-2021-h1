@@ -29,7 +29,7 @@ CLOUDINARY_API_SECRET=
 [hér](https://cloudinary.com/documentation/node_integration#configuration).
 Við notuðum nöfnin á myndunum í `data/img` með endingu (`.jpg`) fyrir `public_id`
 þannig ef sá aðili sem fer yfir verkefnið er nú þegar með myndinarnar inni á
-Cloudinary og notar sama fyrirkomalag þá ætti `npm setup` ekki að taka
+Cloudinary og notar sama fyrirkomulag þá ætti `npm setup` ekki að taka
 langan tíma. En ef sú er ekki raunin gæti það tekið nokkrar mínútur :cry:
 
 ```
@@ -55,7 +55,7 @@ Venulegur notandi:
 
 Til að hlaða upp mynd með á `tv/:id` eða `tv/:id/season` þarf að gefa upp
 absolute path. Í þessu tilviku notar Cloudinary ekki nafnið á myndinni sem
-`public_id` eins og með myndirnar í `data/img`.
+`public_id` eins og með myndirnar í `data/img` heldur random streng.
 
 ```
 POST á /tv
