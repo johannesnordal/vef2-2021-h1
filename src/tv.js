@@ -44,13 +44,13 @@ export const get = {
 
     singleSeason: async (req, res) => {
         const { id, seasonID } = req.params;
-        const season = await getSeason(id, seasonID)
+        const season = await getSeason(res,id, seasonID)
         res.json(season)
     },
 
     singleEpisode: async (req, res) => {
         const { id, seasonID, episodeID } = req.params;
-        const season = await getSeason(id, seasonID);
+        const season = await getSeason(res,id, seasonID);
 
         const episodes = season.episodes;
         for (let ep of episodes) {
@@ -121,7 +121,7 @@ export const post = {
       let date = episode.air_date.split('-');
       airdate = new Date(date[0], date[1], date[2]);
     }
-    let season = await getSeason(id, seasonID);
+    let season = await getSeason(res,id, seasonID);
     const newEp = {
       "name": episode.name,
       "number": episode.number,
@@ -209,14 +209,14 @@ export const takeOut = {
 
   season: async (req, res) => {
     const { id, seasonID } = req.params;
-    const season = await getSeason(id,seasonID)
+    const season = await getSeason(res,id,seasonID)
     const result = await remove.season(season.id);
     res.json(result)
   },
 
   episode: async (req, res) => {
     const { id, seasonID, episodeID } = req.params;
-    const season = await getSeason(id, seasonID);
+    const season = await getSeason(res,id, seasonID);
     const episodes = season.episodes;
     let epID = 0;
     for (let ep of episodes) {
@@ -292,9 +292,12 @@ async function getSerie(serieID) {
 }
 
 /**Skilar season hlut með episode hlut */
-async function getSeason(serieID, seasonNumber) {
+async function getSeason(res, serieID, seasonNumber) {
 
     const season = await select.serieSeason(serieID, seasonNumber)
+    if(!season){
+        res.json({"error": "Season ekki til"})
+    }
     const episodesInSeason = await select.pageOfSeasonEpisodes(season.id,0,1000)
     season.episodes = episodesInSeason
     return season;
