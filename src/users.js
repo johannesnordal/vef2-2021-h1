@@ -98,8 +98,12 @@ export async function getUsers(req, res) {
  * Tekur innfylki af users objects
  * Skila fylki af user objects mínus password
  */
- function takeOutPassword(users) {
+function takeOutPassword(users) {
   const newUsers = [];
+
+  if (users == null) {
+    return newUsers;
+  }
   
   for (const user of users) {
     const obj = {
@@ -110,6 +114,7 @@ export async function getUsers(req, res) {
     };
     newUsers.push(obj);
   }
+
   return newUsers;
 }
 
