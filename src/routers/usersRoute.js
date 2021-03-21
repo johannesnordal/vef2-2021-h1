@@ -79,11 +79,11 @@ router.get('/:id',
 router.post('/register',
   validationMiddleware,
   validationCheck,
-  catchErrors(register));
+  catchErrors(register)
+);
 router.post('/login',
-  validationMiddleware,
-  validationCheck,
-  catchErrors(login));
+  catchErrors(login)
+);
 
 /** ** PATCH ROUTERS */
 router.patch('/me',

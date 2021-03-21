@@ -41,3 +41,27 @@ POST á /tv/:id/season/:id/episode
     "airdate": null,
     "overview": "Við fyrstu sýn var þetta bara venjulegt skjal."
 }
+
+POST á /users/register
+{
+    "username": "Simmi",
+    "password": "1234567890",
+    "email": "simmi@binni.is"
+}
+
+POST á /users/login
+{
+    "username": "Simmi",
+    "password": "1234567890"
+}
+
+PATCH á /users/me
+{
+    "email": "binni@simmi.is",
+    "password": "1234567890"
+}
+
+PATCH á /user/:id
+{
+    "admin":true
+}
