@@ -13,7 +13,7 @@ if (!cloudinaryURL) {
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET,
   });
 }
 
@@ -28,9 +28,9 @@ export async function uploadImage(imagePath) {
   const pathname = path.normalize(imagePath);
 
   if (!images) {
-    const res  = await resourcesAsync({ max_results: 500 });
+    const res = await resourcesAsync({ max_results: 500 });
 
-    images = res.resources
+    images = res.resources;
   }
 
   for (const image of images) {
@@ -54,4 +54,4 @@ export default {
   uploadImage,
   uploadAsync,
   resourcesAsync,
-}
+};
