@@ -1,5 +1,6 @@
-post a /tv
+## Dæmi um notkun á POST og PATCH
 
+POST á /tv
 {
     "name": "Ævintýri Magga og Jóa",
     "airdate": "2021-01-15",
@@ -11,8 +12,7 @@ post a /tv
     "network": "ÍNN"
 }
 
-patch 'a /tv/:id
-
+PATCH 'a /tv/:id
 {
     "name": "Ævintýri Magnúsar og Jóhannes",
     "airdate": "2021-01-15",
@@ -34,10 +34,45 @@ POST á /tv:id/season
     "serieid": 18
 }
 
-Post á /tv/:id/season/:id/episode
+POST á /tv/:id/season/:id/episode
 {
     "name": "Jói og dulafulla readMe skjalið",
     "number": 555,
     "airdate": null,
     "overview": "Við fyrstu sýn var þetta bara venjulegt skjal."
 }
+
+POST á /users/register
+{
+    "username": "Simmi",
+    "password": "1234567890",
+    "email": "simmi@binni.is"
+}
+
+POST á /users/login
+{
+    "username": "Simmi",
+    "password": "1234567890"
+}
+
+PATCH á /users/me
+{
+    "email": "binni@simmi.is",
+    "password": "1234567890"
+}
+
+PATCH á /user/:id
+{
+    "admin":true
+}
+
+## Tilbúnir notendur
+### Admin
+Username: admin
+Email: admin@admin
+Password: adminadmin
+
+### Venjulegur user
+Username: user
+Email: user@user
+Password: 1234567890
