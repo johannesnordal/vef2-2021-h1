@@ -92,7 +92,13 @@ export const insert = {
 
     const q = `insert into episodes (${keys}) values (${paramString})`;
 
-    await query(q, values);
+    try {
+      await query(q, values);
+    } catch (e) {
+      return {
+        error: `Þáttur með number ${episode.number} hefur nú þegar verið skráður`,
+      };
+    }
   },
 
   serieGenre: async (serieID, genre) => {

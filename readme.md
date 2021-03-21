@@ -45,7 +45,7 @@ Admin:
 + email: `admin@admin.is`
 + password: `adminadmin`
 
-Venulegur notandi:
+Venjulegur notandi:
 
 + username: `user`
 + email: `user@user.is`
