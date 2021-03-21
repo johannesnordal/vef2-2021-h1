@@ -15,8 +15,8 @@
 
 Okkur tókst ekki að nota `CLOUDINARY_URL` locally þó að það hafi
 gengið á 
-[Heroku](https://vef2-2021-h1-jon8-mtv3.herokuapp.com/)
-. Þarf að leiðandi þarf að nota eftirfarandi 
+[Heroku](https://vef2-2021-h1-jon8-mtv3.herokuapp.com/).
+Þarf að leiðandi þarf að nota eftirfarandi 
 umhverfisbreytur í `.env`:
 
 ```
