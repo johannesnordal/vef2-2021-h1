@@ -76,7 +76,7 @@ export const post = {
     const newSerie = {
       name: serie.name,
       airdate,
-      inproduction: serie.in_production,
+      inproduction: serie.inproduction,
       image: imageURL,
       description: serie.description,
       language: serie.language,
