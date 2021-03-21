@@ -69,10 +69,26 @@ export async function parseUsers() {
   return users;
 }
 
+export async function parseUsersSeries() {
+  const raw = await readFileAsync('data/usersSeries.csv');
+
+  const usersSeries = await neatCsv(raw, {
+    mapValues: ({ header, index, value }) => {
+      if (header !== 'state') {
+        return Number(value);
+      }
+      return value;
+    }
+  });
+
+  return usersSeries;
+}
+
 export default {
   parseSeries,
   parseSeasons,
   parseEpisodes,
   parseUsers,
+  parseUsersSeries,
   toBool,
 }

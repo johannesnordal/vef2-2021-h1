@@ -100,7 +100,12 @@ async function insertSeriesGenres(series, seriesIDs) {
 async function insertUsers(users) {
   for (const user of users) {
     const res = await db.insert.user(user);
-    console.log(res);
+  }
+}
+
+async function insertUsersSeries(usersSeries) {
+  for (const userSerie of usersSeries) {
+    await db.insert.userSerie(userSerie);
   }
 }
 
@@ -124,6 +129,9 @@ async function setup() {
   await insertEpisodes(episodes, seriesIDs);
 
   await insertSeriesGenres(series, seriesIDs);
+
+  const usersSeries = await csvData.parseUsersSeries();
+  await insertUsersSeries(usersSeries);
 }
 
 await setup();

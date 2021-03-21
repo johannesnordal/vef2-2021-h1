@@ -206,7 +206,7 @@ export const update = {
 
     const { rows } = await query(q, values);
 
-    return rows[0];
+    return rows;
   },
 
   userSerie: async (userSerieData) => {
