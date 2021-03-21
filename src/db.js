@@ -5,9 +5,14 @@ import { readFileAsync } from './utils.js';
 
 dotenv.config();
 
-const connectionString = process.env.DATABASE_URL;
+// const connectionString = process.env.DATABASE_URL;
 
-const pool = new pg.Pool({ connectionString });
+const client = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
