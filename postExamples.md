@@ -1,4 +1,4 @@
-## Dæmi um notkun á POST og PATCH
+## Dæmi um köll á vefþjónustu
 
 POST á /tv
 {
