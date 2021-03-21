@@ -134,13 +134,13 @@ export async function patchUser(req, res) {
 
   const { admin } = req.body;
 
-  if (!admin) {
-    return res.json();
-  }
-
   const user = await update.user({
     id: userID,
     admin,
+  }).catch((err) => {
+    return res.json({
+      error: 'Needs to be a boolean value',
+    })
   });
 
   return res.json(takeOutPassword(user));
