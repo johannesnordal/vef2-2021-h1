@@ -24,14 +24,11 @@ export const resourcesByIdAsync = util.promisify(cloudinary.api.resources_by_ids
 let images = null;
 
 export async function uploadImage(imagePath, use_filename = true) {
-  console.log(imagePath);
-
   const name = path.basename(imagePath);
   const pathname = path.normalize(imagePath);
 
   if (!images) {
     const res = await resourcesAsync({ max_results: 500 });
-
     images = res.resources;
   }
 
@@ -41,14 +38,17 @@ export async function uploadImage(imagePath, use_filename = true) {
     }
   }
 
-  const { secure_url } = await uploadAsync(pathname,
-    {
+  const conf = {
       unique_filename: false,
       overwrite: false,
-      // public_id: name,
-      use_filename,
       allowed_formats: 'jpg,png,gif',
-    });
+  };
+
+  if (use_filename) {
+    conf.public_id = name;
+  }
+
+  const { secure_url } = await uploadAsync(pathname, conf);
 
   return secure_url;
 }
