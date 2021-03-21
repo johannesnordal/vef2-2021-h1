@@ -17,13 +17,10 @@ import {
 import { catchErrors } from './../utils.js'
 import { register } from './../register.js'
 
-
-
-
 export const router = express.Router();
 
 /**
- * Error handlers
+ * Validators
  */
 const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const validationMiddleware = [
@@ -48,18 +45,32 @@ export const validationUpdateUser = [
         .withMessage('Needs to be email, max 256 characters')
 ];
 export async function validationCheck(req, res, next) {
-
     const validation = validationResult(req);
 
     if (!validation.isEmpty()) {
         return res.json({ errors: validation.errors });
     }
-
     return next();
 }
 
+/**** GET ROUTERS */
+router.get('/me',
+    requireAuthentication,
+    catchErrors(getMe)
+);
+router.get('/:id',
+    requireAuthentication,
+    isAdmin,
+    paramCheckUser,
+    catchErrors(getSingleUser)
+);
+router.get('/',
+    requireAuthentication,
+    isAdmin,
+    catchErrors(getUsers)
+);
 
-
+/*** POST ROUTERS ***/
 router.post('/register',
     validationMiddleware,
     validationCheck,
@@ -70,21 +81,13 @@ router.post('/login',
     validationCheck,
     catchErrors(login)
 );
-router.get('/me',
-    requireAuthentication,
-    getMe
-);
+
+/**** PATCH ROUTERS */
 router.patch('/me',
     requireAuthentication,
     validationUpdateUser,
     validationCheck,
     catchErrors(patchMeUp)
-); // Óklárað
-router.get('/:id',
-    requireAuthentication,
-    isAdmin,
-    paramCheckUser,
-    catchErrors(getSingleUser)
 );
 router.patch('/:id',
     requireAuthentication,
@@ -92,10 +95,3 @@ router.patch('/:id',
     paramCheckUser,
     catchErrors(patchUser)
 );
-router.get('/',
-    requireAuthentication,
-    isAdmin,
-    catchErrors(getUsers)
-);
-
-

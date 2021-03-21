@@ -158,7 +158,6 @@ router.patch('/:id/state',
   catchErrors(patch.usersRate)
 )
 
-
 /**Delete */
 router.delete('/:id/rate',
   requireAuthentication,
