@@ -2,9 +2,9 @@
 
 Í hópunum eru 
 
-+ Magnús Þór (mtv3@hi.is)
-
 + Jóhannes Nordal (jon8@hi.is).
+
++ Magnús Þór (mtv3@hi.is)
 
 ## Uppsetning á verkefni
 
@@ -14,7 +14,9 @@
 ### Nokkur orð um Cloudinary
 
 Okkur tókst ekki að nota `CLOUDINARY_URL` locally þó að það hafi
-gengið á Heroku. Þarf að leiðandi þarf að nota eftirfarandi 
+gengið á 
+[Heroku](https://vef2-2021-h1-jon8-mtv3.herokuapp.com/)
+. Þarf að leiðandi þarf að nota eftirfarandi 
 umhverfisbreytur í `.env`:
 
 ```
