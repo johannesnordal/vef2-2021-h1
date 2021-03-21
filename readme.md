@@ -112,12 +112,12 @@ PATCH á /user/:id
 
 Admin:
 
-+ Username: admin
-+ Email: admin@admin
-+ Password: adminadmin
++ username: `admin`
++ email: `admin@admin`
++ password: `adminadmin`
 
 Venulegur notandi:
 
-+ Username: user
-+ Email: user@user
-+ Password: 1234567890
++ username: `user`
++ email: `user@user`
++ password: `1234567890`
