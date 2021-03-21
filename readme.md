@@ -42,13 +42,13 @@ npm start
 Admin:
 
 + username: `admin`
-+ email: `admin@admin`
++ email: `admin@admin.is`
 + password: `adminadmin`
 
 Venulegur notandi:
 
 + username: `user`
-+ email: `user@user`
++ email: `user@user.is`
 + password: `1234567890`
 
 ## Dæmi um köll á vefþjónustu
