@@ -28,13 +28,13 @@ export const serieValidationMiddleware = [
     body('name')
         .isLength({ min: 1, max: 128 })
         .withMessage('username is required, max 128 characters'),
-    body('air_date')
+    body('airdate')
         .matches(new RegExp(dateFormat))
         .withMessage('airdate must be a date. Format yyyy-mm-dd'),
-    body('in_production')
+    body('inproduction')
         .isLength({ min: 1, max: 5 })
         .withMessage('inproduction is required'),
-    body('in_production')
+    body('inproduction')
         .isBoolean()
         .withMessage('inproduction must be a boolean'),
     body('image')

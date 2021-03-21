@@ -1,0 +1,47 @@
+post a /tv
+{
+    "id": 1,
+    "name": "WandaVision",
+    "airdate": "2021-01-15",
+    "inproduction": "true",
+    "tagline": "Experience a new vision of reality.",
+    "image": "http://res.cloudinary.com/djsug7np5/image/upload/v1615938788/glKDfE6btIRcVB5zrjspRIs4r52.jpg.jpg",
+    "description": "Wanda Maximoff and Vision—two super-powered beings living idealized suburban lives—begin to suspect that everything is not as it seems.",
+    "language": "en",
+    "network": "Disney+"
+}
+
+patch 'a /tv/:id
+
+{
+    "id": 1,
+    "name": "WandaVision",
+    "airdate": "2021-01-15",
+    "inproduction": "true",
+    "tagline": "Experience a new vision of reality.",
+    "image": "http://res.cloudinary.com/djsug7np5/image/upload/v1615938788/glKDfE6btIRcVB5zrjspRIs4r52.jpg.jpg",
+    "description": "Wanda Maximoff and Vision—two super-powered beings living idealized suburban lives—begin to suspect that everything is not as it seems.",
+    "language": "en",
+    "network": "Disney+"
+}
+
+POST á /tv:id/season
+{
+    "id": 78,
+    "name": "Season 1",
+    "number": 35,
+    "airdate": "1989-12-16T00:00:00.000Z",
+    "overview": "",
+    "image": "http://res.cloudinary.com/djsug7np5/image/upload/v1615938968/u3U4aGwSTpvbULPHTsm7XhadynO.jpg.jpg",
+    "serieid": 18
+}
+
+Post á /tv/:id/season/:id/episode
+ {
+            "name": "MAg of Darkness",
+            "number": 11,
+            "airdate": null,
+            "overview": "Stuck in his room with a broken leg, Bart hears a high-pitched scream. When he looks through his telescope, he sees a guilty Ned Flanders burying the evidence.",
+            "season": 6,
+            "seasonid": 83
+}

@@ -37,7 +37,7 @@ export const get = {
         const { id } = req.params;
         let { offset = 0, limit = 10 } = req.query;
 
-        const seasons = await select.pageOfSeries(id,offset, limit);
+        const seasons = await select.pageOfSeasons(id,offset, limit);
         const data = await addOffsetLimit(req,seasons,limit,offset);
         res.json(data);
     },
@@ -66,7 +66,7 @@ export const post = {
   serie: async (req, res) => {
     const serie = req.body;
     // 'airdate' er á formi "2021-11-18" janúar=0
-    let date = serie.air_date.split('-')
+    let date = serie.airdate.split('-')
 
     const airdate = new Date(date[0], date[1], date[2]);
 
@@ -121,15 +121,14 @@ export const post = {
       let date = episode.air_date.split('-');
       airdate = new Date(date[0], date[1], date[2]);
     }
-    let season = getSeason(id, seasonID);
+    let season = await getSeason(id, seasonID);
     const newEp = {
       "name": episode.name,
       "number": episode.number,
       "airdate": airdate,
       "overview": episode.overview,
-      "season": episode.seasonNumber,
-      "season": seasonID, // Season Number
-      "seasonId": season.id
+      "season": season.number, //season number
+      "seasonid": season.id
 
     }
     const result = insert.episode(newEp);
@@ -179,6 +178,7 @@ export const patch = {
   season: async (req, res) => {
     const { id, seasonID } = req.params;
   },
+
   usersRate: async (req, res) => {
     const { id } = req.params;
     const { rating, state } = req.body;
@@ -209,9 +209,11 @@ export const takeOut = {
 
   season: async (req, res) => {
     const { id, seasonID } = req.params;
-    const result = await remove.season(id, seasonID);
+    const season = await getSeason(id,seasonID)
+    const result = await remove.season(season.id);
     res.json(result)
   },
+
   episode: async (req, res) => {
     const { id, seasonID, episodeID } = req.params;
     const season = await getSeason(id, seasonID);
@@ -293,14 +295,15 @@ async function getSerie(serieID) {
 async function getSeason(serieID, seasonNumber) {
 
     const season = await select.serieSeason(serieID, seasonNumber)
-    const episodesInSeason = await select.pageOfSeasonEpisodes(season.id)
+    const episodesInSeason = await select.pageOfSeasonEpisodes(season.id,0,1000)
     season.episodes = episodesInSeason
     return season;
 }
 
 async function addOffsetLimit(req,items,limit,offset) {
     const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
-
+    offset = parseInt(offset);
+    limit = parseInt(limit)
         const data = {
             limit,
             offset,
