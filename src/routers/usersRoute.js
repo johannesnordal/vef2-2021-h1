@@ -1,5 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+import xss from 'xss';
 
 import {
     getUsers,
@@ -53,7 +54,19 @@ export async function validationCheck(req, res, next) {
     return next();
 }
 
+const xssSanitizationMiddleware = [
+    body('username').customSanitizer((v) => xss(v)),
+    body('email').customSanitizer((v) => xss(v)),
+    body('password').customSanitizer((v) => xss(v)),
+];
+router.use(xssSanitizationMiddleware)
+
 /**** GET ROUTERS */
+router.get('/',
+    requireAuthentication,
+    isAdmin,
+    catchErrors(getUsers)
+);
 router.get('/me',
     requireAuthentication,
     catchErrors(getMe)
@@ -64,18 +77,13 @@ router.get('/:id',
     paramCheckUser,
     catchErrors(getSingleUser)
 );
-router.get('/',
-    requireAuthentication,
-    isAdmin,
-    catchErrors(getUsers)
-);
 
 /*** POST ROUTERS ***/
 router.post('/register',
     validationMiddleware,
     validationCheck,
     catchErrors(register)
-); 
+);
 router.post('/login',
     validationMiddleware,
     validationCheck,
