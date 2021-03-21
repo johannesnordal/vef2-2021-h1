@@ -83,7 +83,6 @@ export async function isAdmin(req, res, next) {
   return res.json({ error: 'insufficient authorization' });
 }
 
-<<<<<<< HEAD
 export async function getUsers(req, res) {
   const { offset = 0, limit = 10 } = req.query;
 
@@ -95,8 +94,6 @@ export async function getUsers(req, res) {
   return res.json(result);
 }
 
-=======
->>>>>>> 3b441cd30a4108255d52089248d86e29b0fbac93
 /**
  * Tekur innfylki af users objects
  * Skila fylki af user objects mínus password
@@ -116,17 +113,6 @@ export async function getUsers(req, res) {
   return newUsers;
 }
 
-
-export async function getUsers(req, res) {
-  let { offset = 0, limit = 10 } = req.query;
-
-  const users = await select.pageOfUsers(parseInt(offset),parseInt(limit))
-  const newUsers = takeOutPassword(users);
-
-  const result = await addOffsetLimit(req,newUsers,limit,offset);
- 
-  return res.json(result);
-}
 
 export async function getSingleUser(req, res) {
   const { id } = req.params;
