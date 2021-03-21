@@ -35,11 +35,27 @@ npm install
 npm run setup
 npm start
 ```
+## Tilbúnir notendur
+
+Admin:
+
++ username: `admin`
++ email: `admin@admin`
++ password: `adminadmin`
+
+Venulegur notandi:
+
++ username: `user`
++ email: `user@user`
++ password: `1234567890`
 
 ## Dæmi um köll á vefþjónustu
 
-```
+Til að hlaða upp mynd með á `tv/:id` eða `tv/:id/season` þarf að gefa upp
+absolute path. Í þessu tilviku notar Cloudinary ekki nafnið á myndinni sem
+`public_id` eins og með myndirnar í `data/img`.
 
+```
 POST á /tv
 {
     "name": "Ævintýri Magga og Jóa",
@@ -51,11 +67,9 @@ POST á /tv
     "language": "en",
     "network": "ÍNN"
 }
-
 ```
 
 ```
-
 PATCH 'a /tv/:id
 {
     "name": "Ævintýri Magnúsar og Jóhannes",
@@ -70,7 +84,6 @@ PATCH 'a /tv/:id
 ```
 
 ```
-
 POST á /tv:id/season
 {
     "name": "Season 1",
@@ -80,7 +93,6 @@ POST á /tv:id/season
     "image": "absolute/path/to/image",
     "serieid": 18
 }
-
 ```
 
 ```
@@ -92,6 +104,7 @@ POST á /tv/:id/season/:id/episode
     "overview": "Við fyrstu sýn var þetta bara venjulegt skjal."
 }
 ```
+
 ```
 POST á /users/register
 {
@@ -102,44 +115,25 @@ POST á /users/register
 ```
 
 ```
-
 POST á /users/login
 {
     "username": "Simmi",
     "password": "1234567890"
 }
-
 ```
 
 ```
-
 PATCH á /users/me
 {
     "email": "binni@simmi.is",
     "password": "1234567890"
 }
-
 ```
 
 ```
-
 PATCH á /user/:id
 {
     "admin":true
 }
 
 ```
-
-## Tilbúnir notendur
-
-Admin:
-
-+ username: `admin`
-+ email: `admin@admin`
-+ password: `adminadmin`
-
-Venulegur notandi:
-
-+ username: `user`
-+ email: `user@user`
-+ password: `1234567890`
