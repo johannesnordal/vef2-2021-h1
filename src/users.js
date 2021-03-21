@@ -43,36 +43,34 @@ export async function findByEmail(email) {
   return false;
 }
 
-export async function findById(id) {
-  const q = 'SELECT * FROM users WHERE id = $1';
+async function addOffsetLimit(req, items, limit, offset) {
+  const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
+  offset = parseInt(offset);
+  limit = parseInt(limit);
+  const data = {
+    limit,
+    offset,
+    items,
+    _links: {
+      self: {
+        href: `${url}?offset=${offset}&limit=${limit}`,
+      },
+    },
+  };
 
-  try {
-    const result = await query(q, [id]);
-
-    if (result.rowCount === 1) {
-      return result.rows[0];
-    }
-  } catch (e) {
-    console.error('Gat ekki fundið notanda eftir id');
+  if (offset > 0) {
+    data._links.prev = {
+      href: `${url}?offset=${offset - limit}&limit=${limit}`,
+    };
   }
 
-  return null;
-}
-
-async function countUsers() {
-  const q = 'SELECT COUNT(*) FROM users';
-
-  try {
-    const result = await query(q);
-
-    if (result.rowCount === 1) {
-      return parseInt(result.rows[0].count);
-    }
-  } catch (e) {
-    console.error('Gat ekki fundið lengd');
+  if (items.length !== 0) {
+    data._links.next = {
+      href: `${url}?offset=${offset + limit}&limit=${limit}`,
+    };
   }
 
-  return null;
+  return data;
 }
 
 export async function isAdmin(req, res, next) {
@@ -85,6 +83,7 @@ export async function isAdmin(req, res, next) {
   return res.json({ error: 'insufficient authorization' });
 }
 
+<<<<<<< HEAD
 export async function getUsers(req, res) {
   const { offset = 0, limit = 10 } = req.query;
 
@@ -96,30 +95,42 @@ export async function getUsers(req, res) {
   return res.json(result);
 }
 
+=======
+>>>>>>> 3b441cd30a4108255d52089248d86e29b0fbac93
 /**
  * Tekur innfylki af users objects
  * Skila fylki af user objects mínus password
  */
-function takeOutPassword(users) {
+ function takeOutPassword(users) {
   const newUsers = [];
-
+  
   for (const user of users) {
     const obj = {
       id: user.id,
       username: user.username,
       email: user.email,
       admin: user.admin,
-      created: user.created,
-      updated: user.updated,
     };
     newUsers.push(obj);
   }
   return newUsers;
 }
 
+
+export async function getUsers(req, res) {
+  let { offset = 0, limit = 10 } = req.query;
+
+  const users = await select.pageOfUsers(parseInt(offset),parseInt(limit))
+  const newUsers = takeOutPassword(users);
+
+  const result = await addOffsetLimit(req,newUsers,limit,offset);
+ 
+  return res.json(result);
+}
+
 export async function getSingleUser(req, res) {
   const { id } = req.params;
-  const user = await findById(id);
+  const user = await select.user(id);
   const result = takeOutPassword([user]);
 
   return res.json(result[0]);
@@ -152,7 +163,7 @@ export async function patchUser(req, res) {
 export async function paramCheckUser(req, res, next) {
   const { id } = req.params;
 
-  const user = await findById(id);
+  const user = await select.user(id);
 
   if (!id || !user) {
     return res.json({ error: 'No such id' });
@@ -185,34 +196,4 @@ export async function patchMeUp(req, res) {
   const userUpdate = await update.user(data);
 
   return res.json(userUpdate);
-}
-
-async function addOffsetLimit(req, items, limit, offset) {
-  const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
-  offset = parseInt(offset);
-  limit = parseInt(limit);
-  const data = {
-    limit,
-    offset,
-    items,
-    _links: {
-      self: {
-        href: `${url}?offset=${offset}&limit=${limit}`,
-      },
-    },
-  };
-
-  if (offset > 0) {
-    data._links.prev = {
-      href: `${url}?offset=${offset - limit}&limit=${limit}`,
-    };
-  }
-
-  if (items.length !== 0) {
-    data._links.next = {
-      href: `${url}?offset=${offset + limit}&limit=${limit}`,
-    };
-  }
-
-  return data;
 }
