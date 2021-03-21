@@ -1,13 +1,13 @@
-import bcrypt from 'bcrypt';
-import { query, update } from './db.js'
+/* eslint-disable radix */
 
+import bcrypt from 'bcrypt';
+import { query, select, update } from './db.js';
 
 export async function comparePasswords(password, hash) {
   const result = await bcrypt.compare(password, hash);
 
   return result;
 }
-
 
 export async function findByUsername(username) {
   const q = 'SELECT * FROM users WHERE username = $1';
@@ -82,66 +82,18 @@ export async function isAdmin(req, res, next) {
     return next();
   }
 
-  return res.json({"error": "insufficient authorization"})
+  return res.json({ error: 'insufficient authorization' });
 }
 
 export async function getUsers(req, res) {
   let { offset = 0, limit = 10 } = req.query;
-  const q = 'SELECT * FROM users';
-  const usersLength = await countUsers();
 
-  let users = await listOfUsers(parseInt(offset), parseInt(limit));
+  const users = await select.pageOfUsers(parseInt(offset),parseInt(limit))
   const newUsers = takeOutPassword(users);
 
-  offset = parseInt(offset);
-  limit = parseInt(limit)
-
-  let next = {};
-  let prev = {};
-  const self = { "href": `localhost:3000/users?offset=${offset}&limit=${limit}` }
-  if (usersLength > offset + limit) {
-    next = { "href": `localhost:3000/users?offset=${offset + limit}&limit=${limit}` }
-  }
-  if (offset > 0 && offset < limit) {
-    prev = { "href": `localhost:3000/users?offset=${0}&limit=${limit}` }
-  } else if (offset > 0) {
-    prev = { "href": `localhost:3000/users?offset=${offset - limit}&limit=${limit}` }
-  }
-
-  let obj = {
-    "limit": limit,
-    "offset": offset,
-    "items": newUsers,
-    "_links": {
-      "self": self,
-      "prev": prev,
-      "next": next
-    }
-
-  }
-  return res.json(obj);
-}
-
-/**
- * Listi af x mörgum users úr users töflunni
- */
-export async function listOfUsers(offset = 0, limit = 10) {
-  const values = [offset, limit];
-  let result = [];
-
-  try {
-    const q = `SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2`;
-
-    const queryResult = await query(q, values);
-
-    if (queryResult && queryResult.rows) {
-      result = queryResult.rows;
-
-    }
-  } catch (e) {
-    console.error('Error finding users', e);
-  }
-  return result;
+  const result = await addOffsetLimit(req,newUsers,limit,offset);
+ 
+  return res.json(result);
 }
 
 /**
@@ -149,36 +101,34 @@ export async function listOfUsers(offset = 0, limit = 10) {
  * Skila fylki af user objects mínus password
  */
 function takeOutPassword(users) {
-  let newUsers = [];
+  const newUsers = [];
 
-  for (let user of users) {
-
-    let obj = {
-      "id": user.id,
-      "username": user.username,
-      "email": user.email,
-      "admin": user.admin,
-      "created": user.created,
-      "updated": user.updated
-    }
+  for (const user of users) {
+    const obj = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      admin: user.admin,
+      created: user.created,
+      updated: user.updated,
+    };
     newUsers.push(obj);
   }
   return newUsers;
 }
 
-
 export async function getSingleUser(req, res) {
   const { id } = req.params;
   const user = await findById(id);
-  const result = takeOutPassword([user])
+  const result = takeOutPassword([user]);
 
-  return res.json(result[0])
+  return res.json(result[0]);
 }
 
 export async function patchUser(req, res) {
   const adminID = req.user.id;
   const userID = Number(req.params.id);
-  
+
   if (adminID === userID) {
     return res.json({
       error: 'Can\'t change self from admin to user',
@@ -202,19 +152,19 @@ export async function patchUser(req, res) {
 export async function paramCheckUser(req, res, next) {
   const { id } = req.params;
 
-  const user = await findById(id)
+  const user = await findById(id);
 
   if (!id || !user) {
-    return res.json({ "error": "No such id" })
+    return res.json({ error: 'No such id' });
   }
-  
-  return next()
+
+  return next();
 }
 
 export async function getMe(req, res) {
   const { user } = req;
-  let ret = takeOutPassword([user])
-  res.json(ret)
+  const ret = takeOutPassword([user]);
+  res.json(ret);
 }
 
 export async function patchMeUp(req, res) {
@@ -235,4 +185,34 @@ export async function patchMeUp(req, res) {
   const userUpdate = await update.user(data);
 
   return res.json(userUpdate);
+}
+
+
+async function addOffsetLimit(req, items, limit, offset) {
+  const url = `${req.protocol}://${req.headers.host}${req.baseUrl}`;
+  offset = parseInt(offset);
+  limit = parseInt(limit);
+  const data = {
+    limit,
+    offset,
+    items,
+    _links: {
+      self: {
+        href: `${url}?offset=${offset}&limit=${limit}`,
+      },
+    },
+  };
+
+  if (offset > 0) {
+    data._links.prev = {
+      href: `${url}?offset=${offset - limit}&limit=${limit}`,
+    };
+  }
+
+  if (items.length !== 0) {
+    data._links.next = {
+      href: `${url}?offset=${offset + limit}&limit=${limit}`,
+    };
+  }
+  return data;
 }

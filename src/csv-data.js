@@ -8,10 +8,9 @@ export async function parseSeries() {
     mapValues: ({ header, index, value }) => {
       if (header === 'id') {
         return Number(value);
-      } else {
-        return value;
       }
-    }
+      return value;
+    },
   });
 
   return series;
@@ -26,7 +25,7 @@ export async function parseSeasons() {
         return Number(value);
       }
       return value;
-    }
+    },
   });
 
   return seasons;
@@ -41,7 +40,7 @@ export async function parseEpisodes() {
         return Number(value);
       }
       return value;
-    }
+    },
   });
 
   return episodes;
@@ -63,7 +62,7 @@ export async function parseUsers() {
         return toBool(value);
       }
       return value;
-    }
+    },
   });
 
   return users;
@@ -78,7 +77,7 @@ export async function parseUsersSeries() {
         return Number(value);
       }
       return value;
-    }
+    },
   });
 
   return usersSeries;
@@ -91,4 +90,4 @@ export default {
   parseUsers,
   parseUsersSeries,
   toBool,
-}
+};
